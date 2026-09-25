@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
 		RemoteKeyEntity::class
 	],
 	version = 1,
-	exportSchema = true
+	exportSchema = false
 )
 abstract class WallhavenDatabase : RoomDatabase() {
 	abstract fun dao(): WallhavenDao

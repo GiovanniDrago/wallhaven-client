@@ -78,10 +78,6 @@ kotlin {
 	}
 }
 
-ksp {
-	arg("room.schemaLocation", "$projectDir/schemas")
-}
-
 dependencies {
 	val composeBom = platform(libs.compose.bom)
 	implementation(composeBom)
