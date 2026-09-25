@@ -15,6 +15,7 @@
 	<string name="drawer_api_key_missing">Solo SFW · aggiungi una API key</string>
 	<string name="drawer_filters">Filtri</string>
 	<string name="drawer_nsfw">Consenti NSFW</string>
+	<string name="drawer_sketchy">Consenti sketchy</string>
 	<string name="drawer_nsfw_requires_key">Richiede una API key: tocca per aprire le Impostazioni</string>
 	<string name="drawer_category_people">Persone</string>
 	<string name="drawer_category_anime">Anime</string>
@@ -37,9 +38,24 @@
 
 	<string name="empty_gallery">Nessun wallpaper trovato</string>
 	<string name="empty_favorites">Nessun preferito. Tocca il cuore su un wallpaper.</string>
-	<string name="empty_search">Cerca tra i wallpaper già visualizzati per tag, uploader, ID o source.</string>
-	<string name="empty_search_no_results">Nessun wallpaper in cache corrisponde alla ricerca.</string>
-	<string name="search_hint">Tag, uploader, ID…</string>
+	<string name="empty_search">Scrivi per cercare su wallhaven.</string>
+	<string name="empty_search_no_results">Nessun wallpaper trovato per questa ricerca.</string>
+	<string name="search_hint">Tag, uploader, id:, @utente…</string>
+	<string name="cd_search_filters">Filtri di ricerca</string>
+	<string name="search_filters">Filtri di ricerca</string>
+	<string name="search_sorting">Ordina per</string>
+	<string name="search_sorting_relevance">Rilevanza</string>
+	<string name="search_sorting_latest">Ultimi</string>
+	<string name="search_sorting_views">Visualizzazioni</string>
+	<string name="search_sorting_favorites">Preferiti</string>
+	<string name="search_sorting_toplist">Top 1 mese</string>
+	<string name="search_sorting_random">Casuale</string>
+	<string name="search_categories">Categorie</string>
+	<string name="search_purity">Purezza</string>
+	<string name="search_color">Colore</string>
+	<string name="search_color_none">Nessun colore</string>
+	<string name="search_reset">Reimposta filtri</string>
+	<string name="search_nsfw_requires_key">Per l'NSFW serve una API key salvata nelle Impostazioni</string>
 
 	<string name="download">Scarica</string>
 	<string name="downloading">Download in corso…</string>
@@ -65,6 +81,7 @@
 	<string name="info_tags">Tag</string>
 	<string name="info_colors">Colori</string>
 	<string name="action_open_in_browser">Apri su wallhaven</string>
+	<string name="purity_sfw">SFW</string>
 	<string name="purity_sketchy">Sketchy</string>
 	<string name="purity_nsfw">NSFW</string>
 

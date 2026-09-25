@@ -5,11 +5,13 @@ Private Android client for [wallhaven.cc](https://wallhaven.cc), built with Kotl
 ## Features
 
 - Gallery of the latest wallpapers with infinite scrolling and pull to refresh.
-- Left drawer with search, favorites, settings and content toggles (NSFW, people, anime, general).
+- Search on the wallhaven API with its own filters: relevance and other sortings, categories, purity
+  (sketchy and NSFW independent) and the wallhaven color palette.
+- Left drawer with favorites, settings and content toggles (NSFW, sketchy, people, anime, general).
 - Detail screen with zoomable image, full metadata, tag chips, download and favorite buttons.
 - Downloads saved to `Pictures/Wallhaven` through MediaStore.
-- Local Room/SQLite cache: every browsed wallpaper is stored, and Search runs a `LIKE` query over
-  the cached tags, uploader, ID and source.
+- Local Room/SQLite cache: every browsed wallpaper, gallery results and search results are stored,
+  so they stay available offline and can be favorited.
 - Favorites stored in the local database.
 - The wallhaven API key is encrypted with the Android Keystore in a dedicated preferences file,
   excluded from backups and never stored in the wallpaper database or in a request URL.

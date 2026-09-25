@@ -39,7 +39,8 @@ fun DrawerContent(
 	apiKeyPresent: Boolean,
 	selectedSection: AppSection,
 	onNavigate: (AppSection) -> Unit,
-	onAllowNsfwChange: (Boolean) -> Unit,
+	onNsfwChange: (Boolean) -> Unit,
+	onSketchyChange: (Boolean) -> Unit,
 	onCategoryChange: (CategoryFilter, Boolean) -> Unit
 ) {
 	Column(
@@ -91,14 +92,19 @@ fun DrawerContent(
 			} else {
 				stringResource(R.string.drawer_nsfw_requires_key)
 			},
-			checked = filters.allowNsfw,
+			checked = filters.nsfw,
 			enabled = apiKeyPresent,
-			onCheckedChange = onAllowNsfwChange,
+			onCheckedChange = onNsfwChange,
 			onClick = if (apiKeyPresent) {
 				null
 			} else {
 				{ onNavigate(AppSection.SETTINGS) }
 			}
+		)
+		FilterToggle(
+			label = stringResource(R.string.drawer_sketchy),
+			checked = filters.sketchy,
+			onCheckedChange = onSketchyChange
 		)
 		FilterToggle(
 			label = stringResource(R.string.drawer_category_people),

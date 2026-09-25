@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -36,7 +42,10 @@ fun SearchScreen(
 	viewModel: SearchViewModel = hiltViewModel()
 ) {
 	val query by viewModel.query.collectAsStateWithLifecycle()
+	val options by viewModel.options.collectAsStateWithLifecycle()
+	val apiKeyPresent by viewModel.apiKeyPresent.collectAsStateWithLifecycle()
 	val items = viewModel.results.collectAsLazyPagingItems()
+	var showFilters by rememberSaveable { mutableStateOf(false) }
 
 	Scaffold(
 		topBar = {
@@ -48,6 +57,24 @@ fun SearchScreen(
 							imageVector = Icons.Default.Menu,
 							contentDescription = stringResource(R.string.cd_open_menu)
 						)
+					}
+				},
+				actions = {
+					IconButton(onClick = { showFilters = true }) {
+						BadgedBox(
+							badge = {
+								if (options.activeFilterCount > 0) {
+									Badge {
+										Text(options.activeFilterCount.toString())
+									}
+								}
+							}
+						) {
+							Icon(
+								imageVector = Icons.Default.FilterList,
+								contentDescription = stringResource(R.string.cd_search_filters)
+							)
+						}
 					}
 				}
 			)
@@ -98,5 +125,19 @@ fun SearchScreen(
 				modifier = Modifier.weight(1f)
 			)
 		}
+	}
+
+	if (showFilters) {
+		SearchFilterSheet(
+			options = options,
+			apiKeyPresent = apiKeyPresent,
+			onDismiss = { showFilters = false },
+			onSortingChange = viewModel::setSorting,
+			onCategoryChange = viewModel::setCategory,
+			onSketchyChange = viewModel::setSketchy,
+			onNsfwChange = viewModel::setNsfw,
+			onColorChange = viewModel::setColor,
+			onReset = viewModel::resetFilters
+		)
 	}
 }

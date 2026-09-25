@@ -13,20 +13,19 @@ import dev.giovannidrago.wallhaven.data.db.WallhavenDatabase
 import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.toEntity
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
-import dev.giovannidrago.wallhaven.domain.WallhavenFilters
+import dev.giovannidrago.wallhaven.domain.WallhavenQuery
 import java.io.IOException
 import retrofit2.HttpException
 
 private const val FIRST_PAGE = 1
-private const val ORDER_DESC = "desc"
 
 /**
- * Fetches the wallhaven search feed into Room so the gallery, the search screen and the favorites all
- * read from the same local cache, and previously browsed wallpapers stay available offline.
+ * Fetches a wallhaven listing into Room so the gallery and the search screen share the same local
+ * cache, and previously browsed wallpapers stay available offline.
  */
 @OptIn(ExperimentalPagingApi::class)
-class GalleryRemoteMediator(
-	private val filters: WallhavenFilters,
+class WallhavenRemoteMediator(
+	private val query: WallhavenQuery,
 	private val api: WallhavenApi,
 	private val database: WallhavenDatabase,
 	private val dao: WallhavenDao,
@@ -34,7 +33,7 @@ class GalleryRemoteMediator(
 ) : RemoteMediator<Int, WallpaperEntity>() {
 
 	override suspend fun load(loadType: LoadType, state: PagingState<Int, WallpaperEntity>): MediatorResult {
-		val queryKey = filters.key
+		val queryKey = query.key
 		val page = when (loadType) {
 			LoadType.REFRESH -> FIRST_PAGE
 			LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
@@ -46,26 +45,27 @@ class GalleryRemoteMediator(
 		}
 
 		val apiKey = apiKeyStore.apiKey.value.takeIf { it.isNotBlank() }
-		// Without a key wallhaven rejects NSFW filters outright, so the request stays SFW-only.
-		val effectiveFilters = if (apiKey == null) {
-			filters.copy(allowNsfw = false)
+		// Without a key wallhaven rejects the nsfw purity bit, so only that one is forced off.
+		val effectiveQuery = if (apiKey == null) {
+			query.withoutNsfw()
 		} else {
-			filters
+			query
 		}
 
 		return try {
 			val response = api.search(
-				query = null,
-				categories = effectiveFilters.categories,
-				purity = effectiveFilters.purity,
-				sorting = effectiveFilters.sortingValue,
-				order = ORDER_DESC,
-				topRange = effectiveFilters.topRange,
+				query = effectiveQuery.query,
+				categories = effectiveQuery.categories,
+				purity = effectiveQuery.purity,
+				sorting = effectiveQuery.sorting,
+				order = effectiveQuery.order,
+				topRange = effectiveQuery.topRange,
 				seed = if (loadType == LoadType.REFRESH) {
 					null
 				} else {
 					dao.findRemoteKey(queryKey)?.seed
 				},
+				color = effectiveQuery.color,
 				page = page,
 				apiKey = apiKey
 			)
@@ -75,7 +75,11 @@ class GalleryRemoteMediator(
 					dao.deleteGalleryEntries(queryKey)
 				}
 
-				val favoriteStates = dao.favoriteStates(response.data.map { it.id }).associateBy { it.id }
+				val favoriteStates = if (response.data.isEmpty()) {
+					emptyMap()
+				} else {
+					dao.favoriteStates(response.data.map { it.id }).associateBy { it.id }
+				}
 				val cachedAt = System.currentTimeMillis()
 				dao.upsertWallpapers(
 					response.data.map { dto ->
@@ -99,11 +103,11 @@ class GalleryRemoteMediator(
 					}
 				)
 
-				val lastPage = response.meta.lastPage
+				val endOfPagination = response.data.isEmpty() || page >= response.meta.lastPage
 				dao.upsertRemoteKey(
 					RemoteKeyEntity(
 						queryKey = queryKey,
-						nextPage = if (page >= lastPage) {
+						nextPage = if (endOfPagination) {
 							null
 						} else {
 							page + 1
@@ -113,7 +117,7 @@ class GalleryRemoteMediator(
 				)
 			}
 
-			MediatorResult.Success(endOfPaginationReached = page >= response.meta.lastPage)
+			MediatorResult.Success(endOfPaginationReached = response.data.isEmpty() || page >= response.meta.lastPage)
 		} catch (exception: IOException) {
 			MediatorResult.Error(exception)
 		} catch (exception: HttpException) {

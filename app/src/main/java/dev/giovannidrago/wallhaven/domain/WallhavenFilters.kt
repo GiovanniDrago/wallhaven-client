@@ -30,47 +30,30 @@ enum class CategoryFilter {
 }
 
 /**
- * Content filters shared by the gallery feed and the local search.
+ * Content filters of the main gallery, edited from the drawer.
  *
  * Wallhaven encodes categories and purity as three-digit bitmasks (general/anime/people and
  * sfw/sketchy/nsfw); the same values are also stored as plain words so that Room can filter locally.
  */
 data class WallhavenFilters(
-	val allowNsfw: Boolean = false,
+	val sketchy: Boolean = false,
+	val nsfw: Boolean = false,
 	val general: Boolean = true,
 	val anime: Boolean = true,
 	val people: Boolean = true,
 	val sorting: Sorting = Sorting.LATEST
 ) {
 	val categories: String
-		get() = "${flag(general)}${flag(anime)}${flag(people)}"
+		get() = buildCategoryMask(general, anime, people)
 
 	val purity: String
-		get() = if (allowNsfw) {
-			"111"
-		} else {
-			"100"
-		}
+		get() = buildPurityMask(sketchy, nsfw)
 
 	val categoryValues: List<String>
-		get() = buildList {
-			if (general) {
-				add("general")
-			}
-			if (anime) {
-				add("anime")
-			}
-			if (people) {
-				add("people")
-			}
-		}.ifEmpty { listOf("general") }
+		get() = buildCategoryValues(general, anime, people)
 
 	val purityValues: List<String>
-		get() = if (allowNsfw) {
-			listOf("sfw", "sketchy", "nsfw")
-		} else {
-			listOf("sfw")
-		}
+		get() = buildPurityValues(sketchy, nsfw)
 
 	val sortingValue: String
 		get() = sorting.apiValue
@@ -90,9 +73,14 @@ data class WallhavenFilters(
 		CategoryFilter.PEOPLE -> copy(people = enabled)
 	}
 
-	private fun flag(enabled: Boolean) = if (enabled) {
-		"1"
-	} else {
-		"0"
-	}
+	fun toQuery(): WallhavenQuery = WallhavenQuery(
+		query = null,
+		categories = categories,
+		purity = purity,
+		sorting = sortingValue,
+		order = ORDER_DESC,
+		topRange = topRange,
+		color = null,
+		key = key
+	)
 }

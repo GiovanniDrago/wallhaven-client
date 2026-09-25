@@ -17,8 +17,24 @@ class WallhavenFiltersTest {
 	}
 
 	@Test
-	fun `enabling nsfw grants sketchy and nsfw too`() {
-		val filters = WallhavenFilters(allowNsfw = true)
+	fun `sketchy can be enabled on its own`() {
+		val filters = WallhavenFilters(sketchy = true)
+
+		assertEquals("110", filters.purity)
+		assertEquals(listOf("sfw", "sketchy"), filters.purityValues)
+	}
+
+	@Test
+	fun `nsfw can be enabled on its own`() {
+		val filters = WallhavenFilters(nsfw = true)
+
+		assertEquals("101", filters.purity)
+		assertEquals(listOf("sfw", "nsfw"), filters.purityValues)
+	}
+
+	@Test
+	fun `sketchy and nsfw are independent`() {
+		val filters = WallhavenFilters(sketchy = true, nsfw = true)
 
 		assertEquals("111", filters.purity)
 		assertEquals(listOf("sfw", "sketchy", "nsfw"), filters.purityValues)
@@ -54,7 +70,8 @@ class WallhavenFiltersTest {
 		assertEquals(
 			"toplist|101|111",
 			WallhavenFilters(
-				allowNsfw = true,
+				sketchy = true,
+				nsfw = true,
 				anime = false,
 				sorting = Sorting.TOPLIST_MONTH
 			).key

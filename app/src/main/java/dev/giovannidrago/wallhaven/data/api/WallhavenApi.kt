@@ -18,6 +18,7 @@ interface WallhavenApi {
 		@Query("order") order: String,
 		@Query("topRange") topRange: String?,
 		@Query("seed") seed: String?,
+		@Query("colors") color: String?,
 		@Query("page") page: Int,
 		// Sent as a header so the key never lands in the URL, where HTTP logs would show it.
 		@Header("X-API-Key") apiKey: String?

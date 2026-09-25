@@ -76,7 +76,8 @@ fun MainScreen() {
 					apiKeyPresent = apiKeyPresent,
 					selectedSection = selectedSection,
 					onNavigate = ::navigateTo,
-					onAllowNsfwChange = viewModel::setAllowNsfw,
+					onNsfwChange = viewModel::setNsfw,
+					onSketchyChange = viewModel::setSketchy,
 					onCategoryChange = viewModel::setCategory
 				)
 			}

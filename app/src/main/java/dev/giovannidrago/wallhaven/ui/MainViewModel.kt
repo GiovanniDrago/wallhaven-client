@@ -27,9 +27,15 @@ class MainViewModel @Inject constructor(
 		.map { it.isNotBlank() }
 		.stateIn(viewModelScope, SharingStarted.Eagerly, apiKeyStore.apiKey.value.isNotBlank())
 
-	fun setAllowNsfw(allowNsfw: Boolean) {
+	fun setSketchy(sketchy: Boolean) {
 		viewModelScope.launch {
-			filterPreferences.update(filters.value.copy(allowNsfw = allowNsfw))
+			filterPreferences.update(filters.value.copy(sketchy = sketchy))
+		}
+	}
+
+	fun setNsfw(nsfw: Boolean) {
+		viewModelScope.launch {
+			filterPreferences.update(filters.value.copy(nsfw = nsfw))
 		}
 	}
 

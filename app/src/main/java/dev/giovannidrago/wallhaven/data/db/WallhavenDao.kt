@@ -35,15 +35,6 @@ interface WallhavenDao {
 	@Query("SELECT * FROM wallpapers WHERE favorited = 1 ORDER BY favoritedAt DESC")
 	fun favoritesPagingSource(): PagingSource<Int, WallpaperEntity>
 
-	@Query(
-		"SELECT * FROM wallpapers WHERE " +
-			"(tagsText LIKE '%' || :query || '%' OR uploader LIKE '%' || :query || '%' " +
-			"OR id LIKE '%' || :query || '%' OR source LIKE '%' || :query || '%') " +
-			"AND category IN (:categories) AND purity IN (:purities) " +
-			"ORDER BY cachedAt DESC"
-	)
-	fun searchPagingSource(query: String, categories: List<String>, purities: List<String>): PagingSource<Int, WallpaperEntity>
-
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	suspend fun insertGalleryEntries(entries: List<GalleryEntryEntity>)
 

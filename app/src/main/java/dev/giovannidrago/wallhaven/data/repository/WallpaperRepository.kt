@@ -11,6 +11,7 @@ import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.toEntity
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
 import dev.giovannidrago.wallhaven.domain.LOCAL_PAGE_SIZE
+import dev.giovannidrago.wallhaven.domain.SearchOptions
 import dev.giovannidrago.wallhaven.domain.WALLPAPERS_PER_PAGE
 import dev.giovannidrago.wallhaven.domain.WallhavenFilters
 import javax.inject.Inject
@@ -34,18 +35,24 @@ class WallpaperRepository @Inject constructor(
 			prefetchDistance = WALLPAPERS_PER_PAGE,
 			enablePlaceholders = false
 		),
-		remoteMediator = GalleryRemoteMediator(filters, api, database, dao, apiKeyStore),
+		remoteMediator = WallhavenRemoteMediator(filters.toQuery(), api, database, dao, apiKeyStore),
 		pagingSourceFactory = { dao.galleryPagingSource(filters.key) }
+	).flow
+
+	@OptIn(ExperimentalPagingApi::class)
+	fun search(options: SearchOptions): Flow<PagingData<WallpaperEntity>> = Pager(
+		config = PagingConfig(
+			pageSize = WALLPAPERS_PER_PAGE,
+			prefetchDistance = WALLPAPERS_PER_PAGE,
+			enablePlaceholders = false
+		),
+		remoteMediator = WallhavenRemoteMediator(options.toQuery(), api, database, dao, apiKeyStore),
+		pagingSourceFactory = { dao.galleryPagingSource(options.key) }
 	).flow
 
 	fun favorites(): Flow<PagingData<WallpaperEntity>> = Pager(
 		config = PagingConfig(pageSize = LOCAL_PAGE_SIZE, enablePlaceholders = false),
 		pagingSourceFactory = { dao.favoritesPagingSource() }
-	).flow
-
-	fun search(query: String, filters: WallhavenFilters): Flow<PagingData<WallpaperEntity>> = Pager(
-		config = PagingConfig(pageSize = LOCAL_PAGE_SIZE, enablePlaceholders = false),
-		pagingSourceFactory = { dao.searchPagingSource(query, filters.categoryValues, filters.purityValues) }
 	).flow
 
 	fun observeWallpaper(id: String): Flow<WallpaperEntity?> = dao.observeWallpaper(id)
