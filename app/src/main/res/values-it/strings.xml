@@ -55,7 +55,7 @@
 	<string name="search_color">Colore</string>
 	<string name="search_color_none">Nessun colore</string>
 	<string name="search_reset">Reimposta filtri</string>
-	<string name="search_nsfw_requires_key">Per l'NSFW serve una API key salvata nelle Impostazioni</string>
+	<string name="search_nsfw_requires_key">Per l\'NSFW serve una API key salvata nelle Impostazioni</string>
 
 	<string name="download">Scarica</string>
 	<string name="downloading">Download in corso…</string>
