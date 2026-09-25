@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Wallhaven Client</string>
+
+	<string name="cd_open_menu">Apri il menu</string>
+	<string name="cd_back">Indietro</string>
+	<string name="cd_favorite">Preferito</string>
+	<string name="cd_thumbnail">Miniatura wallpaper</string>
+
+	<string name="drawer_gallery">Galleria</string>
+	<string name="drawer_search">Cerca</string>
+	<string name="drawer_favorites">Preferiti</string>
+	<string name="drawer_settings">Impostazioni</string>
+	<string name="drawer_api_key_configured">API key configurata</string>
+	<string name="drawer_api_key_missing">Solo SFW · aggiungi una API key</string>
+	<string name="drawer_filters">Filtri</string>
+	<string name="drawer_nsfw">Consenti NSFW</string>
+	<string name="drawer_nsfw_requires_key">Richiede una API key: tocca per aprire le Impostazioni</string>
+	<string name="drawer_category_people">Persone</string>
+	<string name="drawer_category_anime">Anime</string>
+	<string name="drawer_category_general">Cose</string>
+	<string name="drawer_sorting_latest">Ultimi</string>
+	<string name="drawer_sorting_toplist">Top 1 mese</string>
+	<string name="drawer_sorting_random">Casuale</string>
+
+	<string name="gallery_title">Ultimi</string>
+	<string name="search_title">Cerca</string>
+	<string name="favorites_title">Preferiti</string>
+	<string name="settings_title">Impostazioni</string>
+	<string name="detail_title">Wallpaper</string>
+
+	<string name="error_generic">Qualcosa è andato storto</string>
+	<string name="error_network">Errore di rete. Controlla la connessione.</string>
+	<string name="error_invalid_key">API key non valida. Controllala in Impostazioni.</string>
+	<string name="error_rate_limit">Troppe richieste. Attendi un momento.</string>
+	<string name="action_retry">Riprova</string>
+
+	<string name="empty_gallery">Nessun wallpaper trovato</string>
+	<string name="empty_favorites">Nessun preferito. Tocca il cuore su un wallpaper.</string>
+	<string name="empty_search">Cerca tra i wallpaper già visualizzati per tag, uploader, ID o source.</string>
+	<string name="empty_search_no_results">Nessun wallpaper in cache corrisponde alla ricerca.</string>
+	<string name="search_hint">Tag, uploader, ID…</string>
+
+	<string name="download">Scarica</string>
+	<string name="downloading">Download in corso…</string>
+	<string name="download_success">Salvato in Pictures/Wallhaven</string>
+	<string name="download_failed">Download non riuscito</string>
+	<string name="action_open">Apri</string>
+
+	<string name="favorite_add">Aggiungi ai preferiti</string>
+	<string name="favorite_remove">Rimuovi dai preferiti</string>
+	<string name="favorite_added">Aggiunto ai preferiti</string>
+	<string name="favorite_removed">Rimosso dai preferiti</string>
+
+	<string name="info_resolution">Risoluzione</string>
+	<string name="info_ratio">Proporzioni</string>
+	<string name="info_type">Tipo</string>
+	<string name="info_size">Dimensione</string>
+	<string name="info_views">Visualizzazioni</string>
+	<string name="info_favorites">Preferiti</string>
+	<string name="info_uploaded">Caricato</string>
+	<string name="info_uploader">Uploader</string>
+	<string name="info_source">Fonte</string>
+	<string name="info_id">ID</string>
+	<string name="info_tags">Tag</string>
+	<string name="info_colors">Colori</string>
+	<string name="action_open_in_browser">Apri su wallhaven</string>
+	<string name="purity_sketchy">Sketchy</string>
+	<string name="purity_nsfw">NSFW</string>
+
+	<string name="settings_api_key_title">API key di Wallhaven</string>
+	<string name="settings_api_key_description">Salvata cifrata con Android Keystore, fuori dal database locale ed esclusa dai backup. Sblocca i contenuti NSFW.</string>
+	<string name="settings_api_key_hint">Incolla la tua API key</string>
+	<string name="settings_api_key_save">Salva e verifica</string>
+	<string name="settings_api_key_remove">Rimuovi</string>
+	<string name="settings_api_key_configured">Una API key valida è salvata</string>
+	<string name="settings_api_key_not_configured">Nessuna API key salvata</string>
+	<string name="settings_api_key_valid">API key verificata e salvata</string>
+	<string name="settings_api_key_invalid">La API key è stata rifiutata da wallhaven</string>
+	<string name="settings_api_key_save_error">Impossibile verificare la API key. Riprova.</string>
+	<string name="settings_api_key_removed">API key rimossa</string>
+	<string name="settings_sorting_title">Ordinamento predefinito</string>
+	<string name="settings_sorting_latest">Ultimi</string>
+	<string name="settings_sorting_toplist">Toplist · 1 mese</string>
+	<string name="settings_sorting_random">Casuale</string>
+	<string name="settings_about_title">Informazioni</string>
+	<string name="settings_version">Versione %1$s</string>
+	<string name="settings_privacy_note">La API key è cifrata con Android Keystore e non viene mai salvata nel database dei wallpaper.</string>
+</resources>
