@@ -1,5 +1,6 @@
 package dev.giovannidrago.wallhaven.data.repository
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -26,6 +27,7 @@ class WallpaperRepository @Inject constructor(
 ) {
 	val apiKey: StateFlow<String> = apiKeyStore.apiKey
 
+	@OptIn(ExperimentalPagingApi::class)
 	fun gallery(filters: WallhavenFilters): Flow<PagingData<WallpaperEntity>> = Pager(
 		config = PagingConfig(
 			pageSize = WALLPAPERS_PER_PAGE,
