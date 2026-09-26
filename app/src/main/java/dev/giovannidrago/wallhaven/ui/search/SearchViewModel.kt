@@ -7,6 +7,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
+import dev.giovannidrago.wallhaven.data.prefs.AccountPreferences
 import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
 import dev.giovannidrago.wallhaven.data.repository.WallpaperRepository
 import dev.giovannidrago.wallhaven.domain.CategoryFilter
@@ -36,7 +37,8 @@ private const val SEARCH_DEBOUNCE_MS = 450L
 class SearchViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
 	private val repository: WallpaperRepository,
-	private val filterPreferences: FilterPreferences
+	private val filterPreferences: FilterPreferences,
+	accountPreferences: AccountPreferences
 ) : ViewModel() {
 	private val _query = MutableStateFlow(savedStateHandle.get<String>("initialQuery").orEmpty())
 	val query: StateFlow<String> = _query.asStateFlow()
@@ -47,6 +49,9 @@ class SearchViewModel @Inject constructor(
 	val apiKeyPresent: StateFlow<Boolean> = repository.apiKey
 		.map { it.isNotBlank() }
 		.stateIn(viewModelScope, SharingStarted.Eagerly, repository.apiKey.value.isNotBlank())
+
+	val accountPurity: StateFlow<Set<String>> = accountPreferences.accountPurity
+		.stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
 
 	val results: Flow<PagingData<WallpaperEntity>> = combine(
 		_query
@@ -69,33 +74,54 @@ class SearchViewModel @Inject constructor(
 	}
 
 	fun setSorting(sorting: SearchSorting) {
-		updateOptions(options.value.copy(sorting = sorting))
+		updateOptions { it.copy(sorting = sorting) }
 	}
 
 	fun setCategory(category: CategoryFilter, enabled: Boolean) {
-		val updated = options.value.withCategory(category, enabled)
-		// Turning every category off would make wallhaven return nothing, so the last one stays on.
-		if (updated.categoryCount == 0) {
-			return
+		updateOptions { current ->
+			val updated = current.withCategory(category, enabled)
+			// Turning every category off would make wallhaven return nothing, so the last one stays on.
+			if (updated.categoryCount == 0) {
+				current
+			} else {
+				updated
+			}
 		}
+	}
 
-		updateOptions(updated)
+	fun setSfw(enabled: Boolean) {
+		updatePurity { it.copy(sfw = enabled) }
 	}
 
 	fun setSketchy(sketchy: Boolean) {
-		updateOptions(options.value.copy(sketchy = sketchy))
+		updatePurity { it.copy(sketchy = sketchy) }
 	}
 
 	fun setNsfw(nsfw: Boolean) {
-		updateOptions(options.value.copy(nsfw = nsfw))
+		updatePurity { it.copy(nsfw = nsfw) }
 	}
 
 	fun setColor(color: String?) {
-		updateOptions(options.value.copy(color = color))
+		updateOptions { it.copy(color = color) }
+	}
+
+	fun setAtleast(atleast: String?) {
+		updateOptions { it.copy(atleast = atleast) }
+	}
+
+	fun toggleResolution(resolution: String) {
+		updateOptions { current ->
+			val resolutions = if (resolution in current.resolutions) {
+				current.resolutions - resolution
+			} else {
+				current.resolutions + resolution
+			}
+			current.copy(resolutions = resolutions)
+		}
 	}
 
 	fun resetFilters() {
-		updateOptions(SearchOptions())
+		updateOptions { SearchOptions() }
 	}
 
 	fun toggleFavorite(wallpaper: WallpaperEntity, favorited: Boolean) {
@@ -104,9 +130,21 @@ class SearchViewModel @Inject constructor(
 		}
 	}
 
-	private fun updateOptions(updated: SearchOptions) {
+	/** At least one purity tier must stay enabled, exactly like the wallhaven search page. */
+	private fun updatePurity(transform: (SearchOptions) -> SearchOptions) {
+		updateOptions { current ->
+			val updated = transform(current)
+			if (updated.purityCount == 0) {
+				current
+			} else {
+				updated
+			}
+		}
+	}
+
+	private fun updateOptions(transform: (SearchOptions) -> SearchOptions) {
 		viewModelScope.launch {
-			filterPreferences.updateSearch(updated)
+			filterPreferences.updateSearch(transform)
 		}
 	}
 }

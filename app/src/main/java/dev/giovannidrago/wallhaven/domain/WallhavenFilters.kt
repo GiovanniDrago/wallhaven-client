@@ -81,6 +81,8 @@ data class WallhavenFilters(
 		order = ORDER_DESC,
 		topRange = topRange,
 		color = null,
+		atleast = null,
+		resolutions = null,
 		key = key
 	)
 }

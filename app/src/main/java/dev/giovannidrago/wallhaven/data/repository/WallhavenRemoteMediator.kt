@@ -14,10 +14,12 @@ import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.toEntity
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
 import dev.giovannidrago.wallhaven.domain.WallhavenQuery
+import dev.giovannidrago.wallhaven.util.AppLogger
 import java.io.IOException
 import retrofit2.HttpException
 
 private const val FIRST_PAGE = 1
+private const val LOG_TAG = "WallhavenSearch"
 
 /**
  * Fetches a wallhaven listing into Room so the gallery and the search screen share the same local
@@ -29,7 +31,9 @@ class WallhavenRemoteMediator(
 	private val api: WallhavenApi,
 	private val database: WallhavenDatabase,
 	private val dao: WallhavenDao,
-	private val apiKeyStore: ApiKeyStore
+	private val apiKeyStore: ApiKeyStore,
+	private val diagnostics: SearchDiagnostics,
+	private val logger: AppLogger
 ) : RemoteMediator<Int, WallpaperEntity>() {
 
 	override suspend fun load(loadType: LoadType, state: PagingState<Int, WallpaperEntity>): MediatorResult {
@@ -52,6 +56,10 @@ class WallhavenRemoteMediator(
 			query
 		}
 
+		val requestSummary = buildRequestSummary(effectiveQuery, apiKey != null, page)
+		diagnostics.recordRequest(requestSummary)
+		logger.debug(LOG_TAG, requestSummary)
+
 		return try {
 			val response = api.search(
 				query = effectiveQuery.query,
@@ -66,9 +74,13 @@ class WallhavenRemoteMediator(
 					dao.findRemoteKey(queryKey)?.seed
 				},
 				color = effectiveQuery.color,
+				atleast = effectiveQuery.atleast,
+				resolutions = effectiveQuery.resolutions,
 				page = page,
 				apiKey = apiKey
 			)
+
+			diagnostics.recordResponse(buildResponseSummary(response.data.map { it.purity }, page, response.meta.lastPage))
 
 			database.withTransaction {
 				if (loadType == LoadType.REFRESH) {
@@ -123,5 +135,29 @@ class WallhavenRemoteMediator(
 		} catch (exception: HttpException) {
 			MediatorResult.Error(exception)
 		}
+	}
+}
+
+private fun buildRequestSummary(query: WallhavenQuery, hasKey: Boolean, page: Int): String = buildString {
+	append("q=").append(query.query ?: "-")
+	append(" · purity=").append(query.purity)
+	append(" · categories=").append(query.categories)
+	append(" · ").append(query.sorting)
+	query.topRange?.let { append(" · top=").append(it) }
+	query.color?.let { append(" · color=").append(it) }
+	query.atleast?.let { append(" · atleast=").append(it) }
+	query.resolutions?.let { append(" · res=").append(it) }
+	append(" · key=").append(if (hasKey) "yes" else "no")
+	append(" · page=").append(page)
+}
+
+private fun buildResponseSummary(purities: List<String?>, page: Int, lastPage: Int): String {
+	val counts = purities.groupingBy { it ?: "sfw" }.eachCount()
+	return buildString {
+		append(purities.size).append(" items")
+		append(" · sfw=").append(counts["sfw"] ?: 0)
+		append(" · sketchy=").append(counts["sketchy"] ?: 0)
+		append(" · nsfw=").append(counts["nsfw"] ?: 0)
+		append(" · page=").append(page).append("/").append(lastPage)
 	}
 }

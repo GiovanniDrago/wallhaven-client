@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.giovannidrago.wallhaven.BuildConfig
 import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.domain.Sorting
+import dev.giovannidrago.wallhaven.ui.search.purityLabelRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +59,11 @@ fun SettingsScreen(
 	val filters by viewModel.filters.collectAsStateWithLifecycle()
 	val saving by viewModel.saving.collectAsStateWithLifecycle()
 	val message by viewModel.message.collectAsStateWithLifecycle()
+	val accountPurity by viewModel.accountPurity.collectAsStateWithLifecycle()
+	val accountBlacklistCount by viewModel.accountBlacklistCount.collectAsStateWithLifecycle()
+	val apiKeyInvalid by viewModel.apiKeyInvalid.collectAsStateWithLifecycle()
+	val lastRequest by viewModel.lastRequest.collectAsStateWithLifecycle()
+	val lastResponse by viewModel.lastResponse.collectAsStateWithLifecycle()
 	val snackbarHostState = remember { SnackbarHostState() }
 	var apiKeyInput by rememberSaveable { mutableStateOf("") }
 
@@ -121,6 +127,30 @@ fun SettingsScreen(
 						),
 						style = MaterialTheme.typography.bodyMedium
 					)
+					if (apiKeyInvalid) {
+						Text(
+							text = stringResource(R.string.settings_api_key_invalid_saved),
+							style = MaterialTheme.typography.bodyMedium,
+							color = MaterialTheme.colorScheme.error
+						)
+					}
+					if (accountPurity.isNotEmpty()) {
+						val labels = listOf("sfw", "sketchy", "nsfw")
+							.filter { it in accountPurity }
+							.map { stringResource(purityLabelRes(it)) }
+						Text(
+							text = stringResource(R.string.settings_account_purity, labels.joinToString(", ")),
+							style = MaterialTheme.typography.bodySmall,
+							color = MaterialTheme.colorScheme.onSurfaceVariant
+						)
+					}
+					if (accountBlacklistCount > 0) {
+						Text(
+							text = stringResource(R.string.settings_account_blacklist, accountBlacklistCount),
+							style = MaterialTheme.typography.bodySmall,
+							color = MaterialTheme.colorScheme.onSurfaceVariant
+						)
+					}
 					OutlinedTextField(
 						value = apiKeyInput,
 						onValueChange = { apiKeyInput = it },
@@ -184,6 +214,42 @@ fun SettingsScreen(
 							Text(
 								text = stringResource(sorting.labelRes()),
 								modifier = Modifier.padding(start = 8.dp)
+							)
+						}
+					}
+				}
+			}
+
+			Text(
+				text = stringResource(R.string.settings_diagnostics_title),
+				style = MaterialTheme.typography.titleMedium
+			)
+			Surface(
+				shape = RoundedCornerShape(16.dp),
+				color = MaterialTheme.colorScheme.surfaceVariant,
+				modifier = Modifier.fillMaxWidth()
+			) {
+				Column(
+					modifier = Modifier.padding(16.dp),
+					verticalArrangement = Arrangement.spacedBy(8.dp)
+				) {
+					if (lastRequest == null && lastResponse == null) {
+						Text(
+							text = stringResource(R.string.settings_diagnostics_empty),
+							style = MaterialTheme.typography.bodySmall,
+							color = MaterialTheme.colorScheme.onSurfaceVariant
+						)
+					} else {
+						lastRequest?.let { summary ->
+							Text(
+								text = stringResource(R.string.settings_diagnostics_last_request, summary),
+								style = MaterialTheme.typography.bodySmall
+							)
+						}
+						lastResponse?.let { summary ->
+							Text(
+								text = stringResource(R.string.settings_diagnostics_last_response, summary),
+								style = MaterialTheme.typography.bodySmall
 							)
 						}
 					}

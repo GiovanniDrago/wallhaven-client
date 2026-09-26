@@ -5,11 +5,13 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import dev.giovannidrago.wallhaven.data.api.WallhavenApi
+import dev.giovannidrago.wallhaven.data.api.dto.UserSettingsDto
 import dev.giovannidrago.wallhaven.data.db.WallhavenDao
 import dev.giovannidrago.wallhaven.data.db.WallhavenDatabase
 import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.toEntity
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
+import dev.giovannidrago.wallhaven.util.AppLogger
 import dev.giovannidrago.wallhaven.domain.LOCAL_PAGE_SIZE
 import dev.giovannidrago.wallhaven.domain.SearchOptions
 import dev.giovannidrago.wallhaven.domain.WALLPAPERS_PER_PAGE
@@ -24,7 +26,9 @@ class WallpaperRepository @Inject constructor(
 	private val api: WallhavenApi,
 	private val database: WallhavenDatabase,
 	private val dao: WallhavenDao,
-	private val apiKeyStore: ApiKeyStore
+	private val apiKeyStore: ApiKeyStore,
+	private val diagnostics: SearchDiagnostics,
+	private val logger: AppLogger
 ) {
 	val apiKey: StateFlow<String> = apiKeyStore.apiKey
 
@@ -35,7 +39,7 @@ class WallpaperRepository @Inject constructor(
 			prefetchDistance = WALLPAPERS_PER_PAGE,
 			enablePlaceholders = false
 		),
-		remoteMediator = WallhavenRemoteMediator(filters.toQuery(), api, database, dao, apiKeyStore),
+		remoteMediator = WallhavenRemoteMediator(filters.toQuery(), api, database, dao, apiKeyStore, diagnostics, logger),
 		pagingSourceFactory = { dao.galleryPagingSource(filters.key) }
 	).flow
 
@@ -46,7 +50,7 @@ class WallpaperRepository @Inject constructor(
 			prefetchDistance = WALLPAPERS_PER_PAGE,
 			enablePlaceholders = false
 		),
-		remoteMediator = WallhavenRemoteMediator(options.toQuery(), api, database, dao, apiKeyStore),
+		remoteMediator = WallhavenRemoteMediator(options.toQuery(), api, database, dao, apiKeyStore, diagnostics, logger),
 		pagingSourceFactory = { dao.galleryPagingSource(options.key) }
 	).flow
 
@@ -82,8 +86,6 @@ class WallpaperRepository @Inject constructor(
 		)
 	}
 
-	/** Validates the key against the account settings endpoint before it is stored. */
-	suspend fun verifyApiKey(apiKey: String) {
-		api.settings(apiKey)
-	}
+	/** Validates the key against the account settings endpoint and returns the account settings. */
+	suspend fun verifyApiKey(apiKey: String): UserSettingsDto = api.settings(apiKey).data
 }

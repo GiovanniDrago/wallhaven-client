@@ -14,39 +14,55 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.giovannidrago.wallhaven.R
+import dev.giovannidrago.wallhaven.domain.ATLEAST_RESOLUTIONS
 import dev.giovannidrago.wallhaven.domain.CategoryFilter
+import dev.giovannidrago.wallhaven.domain.EXACT_RESOLUTIONS
 import dev.giovannidrago.wallhaven.domain.SearchOptions
 import dev.giovannidrago.wallhaven.domain.SearchSorting
 import dev.giovannidrago.wallhaven.domain.WALLHAVEN_COLORS
+import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.components.toComposeColor
+
+private const val ACCOUNT_SETTINGS_URL = "https://wallhaven.cc/settings/browsing"
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SearchFilterSheet(
 	options: SearchOptions,
 	apiKeyPresent: Boolean,
+	accountPurity: Set<String>,
 	onDismiss: () -> Unit,
 	onSortingChange: (SearchSorting) -> Unit,
 	onCategoryChange: (CategoryFilter, Boolean) -> Unit,
+	onSfwChange: (Boolean) -> Unit,
 	onSketchyChange: (Boolean) -> Unit,
 	onNsfwChange: (Boolean) -> Unit,
 	onColorChange: (String?) -> Unit,
+	onAtleastChange: (String?) -> Unit,
+	onResolutionToggle: (String) -> Unit,
 	onReset: () -> Unit
 ) {
+	val context = LocalContext.current
+	val missingPurity = options.purityValues.filter { it !in accountPurity }
+	val hasAccountLimits = accountPurity.isNotEmpty() && missingPurity.isNotEmpty()
+
 	ModalBottomSheet(onDismissRequest = onDismiss) {
 		Column(
 			modifier = Modifier
@@ -95,31 +111,104 @@ fun SearchFilterSheet(
 				}
 			}
 
-			FilterSection(
-				title = stringResource(R.string.search_purity),
-				subtitle = if (apiKeyPresent) {
-					null
-				} else {
-					stringResource(R.string.search_nsfw_requires_key)
+			Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+				Text(
+					text = stringResource(R.string.search_purity),
+					style = MaterialTheme.typography.titleSmall
+				)
+				if (!apiKeyPresent) {
+					Text(
+						text = stringResource(R.string.search_nsfw_requires_key),
+						style = MaterialTheme.typography.bodySmall,
+						color = MaterialTheme.colorScheme.onSurfaceVariant
+					)
 				}
-			) {
-				FilterChip(
-					selected = true,
-					onClick = {},
-					enabled = false,
-					label = { Text(stringResource(R.string.purity_sfw)) }
+				FlowRow(
+					horizontalArrangement = Arrangement.spacedBy(8.dp),
+					verticalArrangement = Arrangement.spacedBy(4.dp)
+				) {
+					FilterChip(
+						selected = options.sfw,
+						onClick = { onSfwChange(!options.sfw) },
+						label = { Text(stringResource(R.string.purity_sfw)) }
+					)
+					FilterChip(
+						selected = options.sketchy,
+						onClick = { onSketchyChange(!options.sketchy) },
+						label = { Text(stringResource(R.string.purity_sketchy)) }
+					)
+					FilterChip(
+						selected = options.nsfw,
+						onClick = { onNsfwChange(!options.nsfw) },
+						enabled = apiKeyPresent,
+						label = { Text(stringResource(R.string.purity_nsfw)) }
+					)
+				}
+				if (hasAccountLimits) {
+					Surface(
+						shape = RoundedCornerShape(12.dp),
+						color = MaterialTheme.colorScheme.errorContainer,
+						contentColor = MaterialTheme.colorScheme.onErrorContainer,
+						modifier = Modifier.fillMaxWidth()
+					) {
+						Column(modifier = Modifier.padding(12.dp)) {
+							val labels = missingPurity.map { stringResource(purityLabelRes(it)) }
+							Text(
+								text = stringResource(R.string.search_account_missing_purity, labels.joinToString(", ")),
+								style = MaterialTheme.typography.bodySmall
+							)
+							TextButton(onClick = { openUrl(context, ACCOUNT_SETTINGS_URL) }) {
+								Text(stringResource(R.string.search_open_account_settings))
+							}
+						}
+					}
+				}
+			}
+
+			Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+				Text(
+					text = stringResource(R.string.search_resolution),
+					style = MaterialTheme.typography.titleSmall
 				)
-				FilterChip(
-					selected = options.sketchy,
-					onClick = { onSketchyChange(!options.sketchy) },
-					label = { Text(stringResource(R.string.purity_sketchy)) }
+				Text(
+					text = stringResource(R.string.search_resolution_atleast),
+					style = MaterialTheme.typography.bodySmall,
+					color = MaterialTheme.colorScheme.onSurfaceVariant
 				)
-				FilterChip(
-					selected = options.nsfw,
-					onClick = { onNsfwChange(!options.nsfw) },
-					enabled = apiKeyPresent,
-					label = { Text(stringResource(R.string.purity_nsfw)) }
+				FlowRow(
+					horizontalArrangement = Arrangement.spacedBy(8.dp),
+					verticalArrangement = Arrangement.spacedBy(4.dp)
+				) {
+					FilterChip(
+						selected = options.atleast == null,
+						onClick = { onAtleastChange(null) },
+						label = { Text(stringResource(R.string.search_resolution_none)) }
+					)
+					ATLEAST_RESOLUTIONS.forEach { resolution ->
+						FilterChip(
+							selected = options.atleast == resolution,
+							onClick = { onAtleastChange(if (options.atleast == resolution) null else resolution) },
+							label = { Text(resolution) }
+						)
+					}
+				}
+				Text(
+					text = stringResource(R.string.search_resolution_exact),
+					style = MaterialTheme.typography.bodySmall,
+					color = MaterialTheme.colorScheme.onSurfaceVariant
 				)
+				FlowRow(
+					horizontalArrangement = Arrangement.spacedBy(8.dp),
+					verticalArrangement = Arrangement.spacedBy(4.dp)
+				) {
+					EXACT_RESOLUTIONS.forEach { resolution ->
+						FilterChip(
+							selected = resolution in options.resolutions,
+							onClick = { onResolutionToggle(resolution) },
+							label = { Text(resolution) }
+						)
+					}
+				}
 			}
 
 			FilterSection(title = stringResource(R.string.search_color)) {
@@ -184,7 +273,7 @@ private fun FilterSection(
 	}
 }
 
-private fun SearchSorting.labelRes(): Int = when (this) {
+internal fun SearchSorting.labelRes(): Int = when (this) {
 	SearchSorting.RELEVANCE -> R.string.search_sorting_relevance
 	SearchSorting.LATEST -> R.string.search_sorting_latest
 	SearchSorting.VIEWS -> R.string.search_sorting_views
@@ -193,8 +282,14 @@ private fun SearchSorting.labelRes(): Int = when (this) {
 	SearchSorting.RANDOM -> R.string.search_sorting_random
 }
 
-private fun CategoryFilter.labelRes(): Int = when (this) {
+internal fun CategoryFilter.labelRes(): Int = when (this) {
 	CategoryFilter.GENERAL -> R.string.drawer_category_general
 	CategoryFilter.ANIME -> R.string.drawer_category_anime
 	CategoryFilter.PEOPLE -> R.string.drawer_category_people
+}
+
+internal fun purityLabelRes(purity: String): Int = when (purity) {
+	"sketchy" -> R.string.purity_sketchy
+	"nsfw" -> R.string.purity_nsfw
+	else -> R.string.purity_sfw
 }

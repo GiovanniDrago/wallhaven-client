@@ -5,8 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.giovannidrago.wallhaven.R
+import dev.giovannidrago.wallhaven.data.api.dto.UserSettingsDto
+import dev.giovannidrago.wallhaven.data.prefs.AccountPreferences
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
 import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
+import dev.giovannidrago.wallhaven.data.repository.SearchDiagnostics
 import dev.giovannidrago.wallhaven.data.repository.WallpaperRepository
 import dev.giovannidrago.wallhaven.domain.Sorting
 import dev.giovannidrago.wallhaven.domain.WallhavenFilters
@@ -24,7 +27,9 @@ import retrofit2.HttpException
 class SettingsViewModel @Inject constructor(
 	private val repository: WallpaperRepository,
 	private val apiKeyStore: ApiKeyStore,
-	private val filterPreferences: FilterPreferences
+	private val filterPreferences: FilterPreferences,
+	private val accountPreferences: AccountPreferences,
+	diagnostics: SearchDiagnostics
 ) : ViewModel() {
 	val apiKeyPresent: StateFlow<Boolean> = apiKeyStore.apiKey
 		.map { it.isNotBlank() }
@@ -33,11 +38,40 @@ class SettingsViewModel @Inject constructor(
 	val filters: StateFlow<WallhavenFilters> = filterPreferences.filters
 		.stateIn(viewModelScope, SharingStarted.Eagerly, WallhavenFilters())
 
+	val accountPurity: StateFlow<Set<String>> = accountPreferences.accountPurity
+		.stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+
+	val accountBlacklistCount: StateFlow<Int> = accountPreferences.accountBlacklistCount
+		.stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
+	val lastRequest: StateFlow<String?> = diagnostics.lastRequest
+	val lastResponse: StateFlow<String?> = diagnostics.lastResponse
+
+	private val _apiKeyInvalid = MutableStateFlow(false)
+	val apiKeyInvalid: StateFlow<Boolean> = _apiKeyInvalid.asStateFlow()
+
 	private val _saving = MutableStateFlow(false)
 	val saving: StateFlow<Boolean> = _saving.asStateFlow()
 
 	private val _message = MutableStateFlow<SettingsMessage?>(null)
 	val message: StateFlow<SettingsMessage?> = _message.asStateFlow()
+
+	init {
+		// Picks up keys regenerated on wallhaven since they were saved, and refreshes the account limits.
+		val storedKey = apiKeyStore.apiKey.value
+		if (storedKey.isNotBlank()) {
+			viewModelScope.launch {
+				runCatching { repository.verifyApiKey(storedKey) }
+					.onSuccess { settings ->
+						_apiKeyInvalid.value = false
+						storeAccountSettings(settings)
+					}
+					.onFailure {
+						_apiKeyInvalid.value = true
+					}
+			}
+		}
+	}
 
 	/** Verifies the key against wallhaven first, so an invalid key is never stored. */
 	fun saveApiKey(apiKey: String) {
@@ -48,37 +82,48 @@ class SettingsViewModel @Inject constructor(
 
 		viewModelScope.launch {
 			_saving.value = true
-			val result = runCatching { repository.verifyApiKey(trimmed) }
-			_message.value = result.fold(
-				onSuccess = {
+			runCatching { repository.verifyApiKey(trimmed) }
+				.onSuccess { settings ->
 					apiKeyStore.set(trimmed)
-					SettingsMessage.VALID
-				},
-				onFailure = { error ->
-					if (error is HttpException && error.code() == 401) {
+					_apiKeyInvalid.value = false
+					storeAccountSettings(settings)
+					_message.value = SettingsMessage.VALID
+				}
+				.onFailure { error ->
+					_message.value = if (error is HttpException && error.code() == 401) {
 						SettingsMessage.INVALID
 					} else {
 						SettingsMessage.SAVE_ERROR
 					}
 				}
-			)
 			_saving.value = false
 		}
 	}
 
 	fun removeApiKey() {
 		apiKeyStore.clear()
+		_apiKeyInvalid.value = false
+		viewModelScope.launch {
+			accountPreferences.clear()
+		}
 		_message.value = SettingsMessage.REMOVED
 	}
 
 	fun setSorting(sorting: Sorting) {
 		viewModelScope.launch {
-			filterPreferences.update(filters.value.copy(sorting = sorting))
+			filterPreferences.update { current -> current.copy(sorting = sorting) }
 		}
 	}
 
 	fun consumeMessage() {
 		_message.value = null
+	}
+
+	private suspend fun storeAccountSettings(settings: UserSettingsDto) {
+		accountPreferences.update(
+			purity = settings.purity,
+			blacklistCount = settings.tagBlacklist.size + settings.userBlacklist.size
+		)
 	}
 }
 

@@ -64,6 +64,7 @@ import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.colors
 import dev.giovannidrago.wallhaven.data.db.tags
 import dev.giovannidrago.wallhaven.ui.components.ZoomableImage
+import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.components.toComposeColor
 import dev.giovannidrago.wallhaven.util.formatCount
 import dev.giovannidrago.wallhaven.util.formatDate
@@ -414,12 +415,4 @@ private fun openUri(context: Context, uri: Uri) {
 	}
 }
 
-private fun openUrl(context: Context, url: String?) {
-	if (url.isNullOrBlank()) {
-		return
-	}
 
-	runCatching {
-		context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-	}
-}

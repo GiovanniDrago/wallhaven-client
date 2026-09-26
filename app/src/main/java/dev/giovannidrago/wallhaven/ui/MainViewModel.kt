@@ -29,31 +29,33 @@ class MainViewModel @Inject constructor(
 
 	fun setSketchy(sketchy: Boolean) {
 		viewModelScope.launch {
-			filterPreferences.update(filters.value.copy(sketchy = sketchy))
+			filterPreferences.update { current -> current.copy(sketchy = sketchy) }
 		}
 	}
 
 	fun setNsfw(nsfw: Boolean) {
 		viewModelScope.launch {
-			filterPreferences.update(filters.value.copy(nsfw = nsfw))
+			filterPreferences.update { current -> current.copy(nsfw = nsfw) }
 		}
 	}
 
 	fun setCategory(category: CategoryFilter, enabled: Boolean) {
-		val updated = filters.value.withCategory(category, enabled)
-		// Turning every category off would make wallhaven return nothing, so the last one stays on.
-		if (updated.categoryCount == 0) {
-			return
-		}
-
 		viewModelScope.launch {
-			filterPreferences.update(updated)
+			filterPreferences.update { current ->
+				val updated = current.withCategory(category, enabled)
+				// Turning every category off would make wallhaven return nothing, so the last one stays on.
+				if (updated.categoryCount == 0) {
+					current
+				} else {
+					updated
+				}
+			}
 		}
 	}
 
 	fun setSorting(sorting: Sorting) {
 		viewModelScope.launch {
-			filterPreferences.update(filters.value.copy(sorting = sorting))
+			filterPreferences.update { current -> current.copy(sorting = sorting) }
 		}
 	}
 }

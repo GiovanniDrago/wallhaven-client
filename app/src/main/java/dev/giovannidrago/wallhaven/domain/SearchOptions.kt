@@ -12,7 +12,8 @@ enum class SearchSorting(val apiValue: String, val topRange: String? = null) {
 /**
  * Search-only filters, independent from the drawer toggles and persisted separately.
  *
- * Wallhaven only accepts one color per search, so [color] is a single palette value.
+ * Wallhaven accepts a single color and a single minimum resolution per search, plus a list of exact
+ * resolutions.
  */
 data class SearchOptions(
 	val query: String = "",
@@ -20,9 +21,12 @@ data class SearchOptions(
 	val general: Boolean = true,
 	val anime: Boolean = true,
 	val people: Boolean = true,
+	val sfw: Boolean = true,
 	val sketchy: Boolean = false,
 	val nsfw: Boolean = false,
-	val color: String? = null
+	val color: String? = null,
+	val atleast: String? = null,
+	val resolutions: List<String> = emptyList()
 ) {
 	val categories: String
 		get() = buildCategoryMask(general, anime, people)
@@ -31,25 +35,33 @@ data class SearchOptions(
 		get() = buildCategoryValues(general, anime, people)
 
 	val purity: String
-		get() = buildPurityMask(sketchy, nsfw)
+		get() = buildPurityMask(sketchy, nsfw, sfw)
 
 	val purityValues: List<String>
-		get() = buildPurityValues(sketchy, nsfw)
+		get() = buildPurityValues(sketchy, nsfw, sfw)
 
 	val categoryCount: Int
 		get() = listOf(general, anime, people).count { it }
+
+	val purityCount: Int
+		get() = listOf(sfw, sketchy, nsfw).count { it }
+
+	val resolutionsValue: String
+		get() = resolutions.sorted().joinToString(",")
 
 	val activeFilterCount: Int
 		get() = listOf(
 			sorting != SearchSorting.RELEVANCE,
 			!general || !anime || !people,
-			sketchy,
-			nsfw,
-			color != null
+			!sfw || sketchy || nsfw,
+			color != null,
+			atleast != null,
+			resolutions.isNotEmpty()
 		).count { it }
 
 	val key: String
-		get() = "search|${sorting.apiValue}|$categories|$purity|${color.orEmpty()}|${query.trim().lowercase()}"
+		get() = "search|${sorting.apiValue}|$categories|$purity|${color.orEmpty()}|" +
+			"${atleast.orEmpty()}|$resolutionsValue|${query.trim().lowercase()}"
 
 	fun withCategory(category: CategoryFilter, enabled: Boolean): SearchOptions = when (category) {
 		CategoryFilter.GENERAL -> copy(general = enabled)
@@ -65,6 +77,8 @@ data class SearchOptions(
 		order = ORDER_DESC,
 		topRange = sorting.topRange,
 		color = color,
+		atleast = atleast,
+		resolutions = resolutionsValue.ifBlank { null },
 		key = key
 	)
 }

@@ -16,6 +16,8 @@ data class WallhavenQuery(
 	val order: String,
 	val topRange: String?,
 	val color: String?,
+	val atleast: String?,
+	val resolutions: String?,
 	val key: String
 ) {
 	/** Wallhaven rejects nsfw results without a key, while sketchy stays available. */
@@ -25,6 +27,13 @@ data class WallhavenQuery(
 			return this
 		}
 
-		return copy(purity = purity.substring(0, 2) + "0")
+		val withoutNsfw = purity.substring(0, 2) + "0"
+		// When nsfw was the only enabled tier, fall back to sfw so the request stays valid.
+		val effective = if (withoutNsfw == "000") {
+			"100"
+		} else {
+			withoutNsfw
+		}
+		return copy(purity = effective)
 	}
 }

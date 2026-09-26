@@ -56,6 +56,15 @@
 	<string name="search_color_none">Nessun colore</string>
 	<string name="search_reset">Reimposta filtri</string>
 	<string name="search_nsfw_requires_key">Per l\'NSFW serve una API key salvata nelle Impostazioni</string>
+	<string name="search_resolution">Risoluzione</string>
+	<string name="search_resolution_atleast">Almeno</string>
+	<string name="search_resolution_exact">Anche esatte</string>
+	<string name="search_resolution_none">Nessuna</string>
+	<string name="search_resolution_atleast_value">≥ %1$s</string>
+	<string name="search_resolutions_count">%1$d risoluzioni esatte</string>
+	<string name="search_account_missing_purity">Il tuo account wallhaven non consente: %1$s</string>
+	<string name="search_open_account_settings">Apri le impostazioni wallhaven</string>
+	<string name="cd_edit_search_filters">Modifica i filtri di ricerca</string>
 
 	<string name="download">Scarica</string>
 	<string name="downloading">Download in corso…</string>
@@ -103,4 +112,11 @@
 	<string name="settings_about_title">Informazioni</string>
 	<string name="settings_version">Versione %1$s</string>
 	<string name="settings_privacy_note">La API key è cifrata con Android Keystore e non viene mai salvata nel database dei wallpaper.</string>
+	<string name="settings_account_purity">Purity consentite: %1$s</string>
+	<string name="settings_account_blacklist">Tag in blacklist: %1$d</string>
+	<string name="settings_api_key_invalid_saved">La API key salvata non è più valida. Rigenerala.</string>
+	<string name="settings_diagnostics_title">Diagnostica</string>
+	<string name="settings_diagnostics_last_request">Ultima richiesta: %1$s</string>
+	<string name="settings_diagnostics_last_response">Ultima risposta: %1$s</string>
+	<string name="settings_diagnostics_empty">Nessuna ricerca effettuata</string>
 </resources>

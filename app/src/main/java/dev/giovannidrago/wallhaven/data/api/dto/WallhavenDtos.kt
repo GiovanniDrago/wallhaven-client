@@ -29,12 +29,14 @@ data class WallpaperDetailResponseDto(val data: WallpaperDto)
 data class UserSettingsResponseDto(val data: UserSettingsDto = UserSettingsDto())
 
 @Serializable
-data class UserSettingsDto(
-	@SerialName("thumb_size") val thumbSize: String? = null,
-	@SerialName("per_page") val perPage: String? = null,
-	val purity: List<String> = emptyList(),
-	val categories: List<String> = emptyList()
-)
+	data class UserSettingsDto(
+		@SerialName("thumb_size") val thumbSize: String? = null,
+		@SerialName("per_page") val perPage: String? = null,
+		val purity: List<String> = emptyList(),
+		val categories: List<String> = emptyList(),
+		@SerialName("tag_blacklist") val tagBlacklist: List<String> = emptyList(),
+		@SerialName("user_blacklist") val userBlacklist: List<String> = emptyList()
+	)
 
 @Serializable
 data class WallpaperDto(

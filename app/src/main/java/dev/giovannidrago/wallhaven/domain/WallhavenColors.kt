@@ -32,3 +32,23 @@ val WALLHAVEN_COLORS: List<String> = listOf(
 	"ffffff",
 	"424153"
 )
+
+/** Common minimum resolutions offered by the "at least" filter. */
+val ATLEAST_RESOLUTIONS: List<String> = listOf(
+	"1280x720",
+	"1920x1080",
+	"2560x1440",
+	"3840x2160"
+)
+
+/** Common exact resolutions offered by the "exactly" filter (multi-select). */
+val EXACT_RESOLUTIONS: List<String> = listOf(
+	"1280x720",
+	"1600x900",
+	"1920x1080",
+	"1920x1200",
+	"2560x1080",
+	"2560x1440",
+	"3440x1440",
+	"3840x2160"
+)

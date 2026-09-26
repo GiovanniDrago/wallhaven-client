@@ -13,6 +13,8 @@ class WallhavenQueryTest {
 		order = "desc",
 		topRange = null,
 		color = null,
+		atleast = null,
+		resolutions = null,
 		key = "k"
 	)
 
@@ -26,5 +28,11 @@ class WallhavenQueryTest {
 	fun `without nsfw clears the nsfw bit alone`() {
 		assertEquals("100", query("101").withoutNsfw().purity)
 		assertEquals("100", query("100").withoutNsfw().purity)
+	}
+
+	@Test
+	fun `without nsfw falls back to sfw when nsfw was the only tier`() {
+		assertEquals("100", query("001").withoutNsfw().purity)
+		assertEquals("010", query("011").withoutNsfw().purity)
 	}
 }

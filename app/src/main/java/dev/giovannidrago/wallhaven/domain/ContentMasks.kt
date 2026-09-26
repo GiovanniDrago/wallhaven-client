@@ -21,12 +21,14 @@ fun buildCategoryValues(general: Boolean, anime: Boolean, people: Boolean): List
 	}
 }.ifEmpty { listOf("general") }
 
-/** The first purity digit is always sfw; sketchy and nsfw can be toggled independently. */
-fun buildPurityMask(sketchy: Boolean, nsfw: Boolean): String =
-	"1${contentDigit(sketchy)}${contentDigit(nsfw)}"
+/** Purity is a three-digit mask sfw/sketchy/nsfw where each tier can be toggled on its own. */
+fun buildPurityMask(sketchy: Boolean, nsfw: Boolean, sfw: Boolean = true): String =
+	"${contentDigit(sfw)}${contentDigit(sketchy)}${contentDigit(nsfw)}"
 
-fun buildPurityValues(sketchy: Boolean, nsfw: Boolean): List<String> = buildList {
-	add("sfw")
+fun buildPurityValues(sketchy: Boolean, nsfw: Boolean, sfw: Boolean = true): List<String> = buildList {
+	if (sfw) {
+		add("sfw")
+	}
 	if (sketchy) {
 		add("sketchy")
 	}
@@ -34,3 +36,5 @@ fun buildPurityValues(sketchy: Boolean, nsfw: Boolean): List<String> = buildList
 		add("nsfw")
 	}
 }
+
+fun hasAnyPurity(sfw: Boolean, sketchy: Boolean, nsfw: Boolean): Boolean = sfw || sketchy || nsfw
