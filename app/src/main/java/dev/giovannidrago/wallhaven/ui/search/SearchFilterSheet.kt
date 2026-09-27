@@ -33,7 +33,9 @@ import androidx.compose.ui.unit.dp
 import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.domain.ATLEAST_RESOLUTIONS
 import dev.giovannidrago.wallhaven.domain.CategoryFilter
+import dev.giovannidrago.wallhaven.domain.EXACT_RATIOS
 import dev.giovannidrago.wallhaven.domain.EXACT_RESOLUTIONS
+import dev.giovannidrago.wallhaven.domain.RatioFormat
 import dev.giovannidrago.wallhaven.domain.SearchOptions
 import dev.giovannidrago.wallhaven.domain.SearchSorting
 import dev.giovannidrago.wallhaven.domain.WALLHAVEN_COLORS
@@ -57,6 +59,8 @@ fun SearchFilterSheet(
 	onColorChange: (String?) -> Unit,
 	onAtleastChange: (String?) -> Unit,
 	onResolutionToggle: (String) -> Unit,
+	onRatioPresetChange: (RatioFormat?) -> Unit,
+	onRatioChange: (String) -> Unit,
 	onReset: () -> Unit
 ) {
 	val context = LocalContext.current
@@ -211,6 +215,47 @@ fun SearchFilterSheet(
 				}
 			}
 
+			Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+				Text(
+					text = stringResource(R.string.search_ratio),
+					style = MaterialTheme.typography.titleSmall
+				)
+				FlowRow(
+					horizontalArrangement = Arrangement.spacedBy(8.dp),
+					verticalArrangement = Arrangement.spacedBy(4.dp)
+				) {
+					FilterChip(
+						selected = options.ratios.isEmpty(),
+						onClick = { onRatioPresetChange(null) },
+						label = { Text(stringResource(R.string.search_ratio_none)) }
+					)
+					RatioFormat.entries.forEach { format ->
+						FilterChip(
+							selected = format.matches(options.ratios),
+							onClick = { onRatioPresetChange(format) },
+							label = { Text(stringResource(format.labelRes())) }
+						)
+					}
+				}
+				Text(
+					text = stringResource(R.string.search_ratio_exact),
+					style = MaterialTheme.typography.bodySmall,
+					color = MaterialTheme.colorScheme.onSurfaceVariant
+				)
+				FlowRow(
+					horizontalArrangement = Arrangement.spacedBy(8.dp),
+					verticalArrangement = Arrangement.spacedBy(4.dp)
+				) {
+					EXACT_RATIOS.forEach { ratio ->
+						FilterChip(
+							selected = options.ratios == listOf(ratio),
+							onClick = { onRatioChange(ratio) },
+							label = { Text(ratio) }
+						)
+					}
+				}
+			}
+
 			FilterSection(title = stringResource(R.string.search_color)) {
 				FilterChip(
 					selected = options.color == null,
@@ -292,4 +337,10 @@ internal fun purityLabelRes(purity: String): Int = when (purity) {
 	"sketchy" -> R.string.purity_sketchy
 	"nsfw" -> R.string.purity_nsfw
 	else -> R.string.purity_sfw
+}
+
+internal fun RatioFormat.labelRes(): Int = when (this) {
+	RatioFormat.LANDSCAPE -> R.string.search_ratio_landscape
+	RatioFormat.PORTRAIT -> R.string.search_ratio_portrait
+	RatioFormat.SQUARE -> R.string.search_ratio_square
 }

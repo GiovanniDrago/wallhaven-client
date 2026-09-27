@@ -40,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.giovannidrago.wallhaven.R
+import dev.giovannidrago.wallhaven.domain.RatioFormat
 import dev.giovannidrago.wallhaven.domain.SearchOptions
 import dev.giovannidrago.wallhaven.domain.SearchSorting
 import dev.giovannidrago.wallhaven.ui.components.WallpaperGrid
@@ -156,6 +157,8 @@ fun SearchScreen(
 			onColorChange = viewModel::setColor,
 			onAtleastChange = viewModel::setAtleast,
 			onResolutionToggle = viewModel::toggleResolution,
+			onRatioPresetChange = viewModel::setRatioPreset,
+			onRatioChange = viewModel::setRatio,
 			onReset = viewModel::resetFilters
 		)
 	}
@@ -186,6 +189,16 @@ private fun FilterSummary(options: SearchOptions, onClick: () -> Unit) {
 		options.atleast?.let { add(stringResource(R.string.search_resolution_atleast_value, it)) }
 		if (options.resolutions.isNotEmpty()) {
 			add(stringResource(R.string.search_resolutions_count, options.resolutions.size))
+		}
+		if (options.ratios.isNotEmpty()) {
+			val preset = RatioFormat.entries.firstOrNull { it.matches(options.ratios) }
+			add(
+				if (preset != null) {
+					stringResource(preset.labelRes())
+				} else {
+					options.ratios.joinToString(" · ")
+				}
+			)
 		}
 	}
 

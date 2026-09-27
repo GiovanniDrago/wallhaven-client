@@ -52,3 +52,30 @@ val EXACT_RESOLUTIONS: List<String> = listOf(
 	"3440x1440",
 	"3840x2160"
 )
+
+/**
+ * Orientation presets for the "format" filter.
+ *
+ * Wallhaven applies the ratio list only when all the values share the same orientation (mixing
+ * landscape and portrait returns just the first group), so the UI keeps a single selection at a time.
+ */
+enum class RatioFormat(val ratios: List<String>) {
+	LANDSCAPE(listOf("16x9", "16x10", "3x2", "4x3", "21x9", "32x9", "48x9", "5x4")),
+	PORTRAIT(listOf("9x16", "10x16", "9x18")),
+	SQUARE(listOf("1x1"));
+
+	fun matches(ratios: List<String>): Boolean = ratios.toSet() == this.ratios.toSet()
+}
+
+/** Single aspect ratios offered alongside the orientation presets (single selection). */
+val EXACT_RATIOS: List<String> = listOf(
+	"16x9",
+	"16x10",
+	"21x9",
+	"3x2",
+	"4x3",
+	"9x16",
+	"10x16",
+	"9x18",
+	"1x1"
+)

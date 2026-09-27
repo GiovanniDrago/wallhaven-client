@@ -15,6 +15,7 @@ class WallhavenQueryTest {
 		color = null,
 		atleast = null,
 		resolutions = null,
+		ratios = null,
 		key = "k"
 	)
 

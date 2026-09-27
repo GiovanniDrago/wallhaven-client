@@ -26,7 +26,8 @@ data class SearchOptions(
 	val nsfw: Boolean = false,
 	val color: String? = null,
 	val atleast: String? = null,
-	val resolutions: List<String> = emptyList()
+	val resolutions: List<String> = emptyList(),
+	val ratios: List<String> = emptyList()
 ) {
 	val categories: String
 		get() = buildCategoryMask(general, anime, people)
@@ -49,6 +50,9 @@ data class SearchOptions(
 	val resolutionsValue: String
 		get() = resolutions.sorted().joinToString(",")
 
+	val ratiosValue: String
+		get() = ratios.sorted().joinToString(",")
+
 	val activeFilterCount: Int
 		get() = listOf(
 			sorting != SearchSorting.RELEVANCE,
@@ -56,12 +60,13 @@ data class SearchOptions(
 			!sfw || sketchy || nsfw,
 			color != null,
 			atleast != null,
-			resolutions.isNotEmpty()
+			resolutions.isNotEmpty(),
+			ratios.isNotEmpty()
 		).count { it }
 
 	val key: String
 		get() = "search|${sorting.apiValue}|$categories|$purity|${color.orEmpty()}|" +
-			"${atleast.orEmpty()}|$resolutionsValue|${query.trim().lowercase()}"
+			"${atleast.orEmpty()}|$resolutionsValue|$ratiosValue|${query.trim().lowercase()}"
 
 	fun withCategory(category: CategoryFilter, enabled: Boolean): SearchOptions = when (category) {
 		CategoryFilter.GENERAL -> copy(general = enabled)
@@ -79,6 +84,7 @@ data class SearchOptions(
 		color = color,
 		atleast = atleast,
 		resolutions = resolutionsValue.ifBlank { null },
+		ratios = ratiosValue.ifBlank { null },
 		key = key
 	)
 }

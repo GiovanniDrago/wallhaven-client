@@ -83,6 +83,7 @@ data class WallhavenFilters(
 		color = null,
 		atleast = null,
 		resolutions = null,
+		ratios = null,
 		key = key
 	)
 }

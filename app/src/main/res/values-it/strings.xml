@@ -62,6 +62,12 @@
 	<string name="search_resolution_none">Nessuna</string>
 	<string name="search_resolution_atleast_value">≥ %1$s</string>
 	<string name="search_resolutions_count">%1$d risoluzioni esatte</string>
+	<string name="search_ratio">Formato</string>
+	<string name="search_ratio_none">Nessuno</string>
+	<string name="search_ratio_landscape">Orizzontale</string>
+	<string name="search_ratio_portrait">Verticale</string>
+	<string name="search_ratio_square">Quadrato</string>
+	<string name="search_ratio_exact">Anche ratio esatti</string>
 	<string name="search_account_missing_purity">Il tuo account wallhaven non consente: %1$s</string>
 	<string name="search_open_account_settings">Apri le impostazioni wallhaven</string>
 	<string name="cd_edit_search_filters">Modifica i filtri di ricerca</string>

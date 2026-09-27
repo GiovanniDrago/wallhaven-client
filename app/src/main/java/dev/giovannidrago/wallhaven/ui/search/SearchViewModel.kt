@@ -11,6 +11,7 @@ import dev.giovannidrago.wallhaven.data.prefs.AccountPreferences
 import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
 import dev.giovannidrago.wallhaven.data.repository.WallpaperRepository
 import dev.giovannidrago.wallhaven.domain.CategoryFilter
+import dev.giovannidrago.wallhaven.domain.RatioFormat
 import dev.giovannidrago.wallhaven.domain.SearchOptions
 import dev.giovannidrago.wallhaven.domain.SearchSorting
 import javax.inject.Inject
@@ -117,6 +118,27 @@ class SearchViewModel @Inject constructor(
 				current.resolutions + resolution
 			}
 			current.copy(resolutions = resolutions)
+		}
+	}
+
+	/** Selecting a format replaces the current one; selecting the active one (or null) clears it. */
+	fun setRatioPreset(format: RatioFormat?) {
+		updateOptions { current ->
+			if (format == null || format.matches(current.ratios)) {
+				current.copy(ratios = emptyList())
+			} else {
+				current.copy(ratios = format.ratios)
+			}
+		}
+	}
+
+	fun setRatio(ratio: String) {
+		updateOptions { current ->
+			if (current.ratios == listOf(ratio)) {
+				current.copy(ratios = emptyList())
+			} else {
+				current.copy(ratios = listOf(ratio))
+			}
 		}
 	}
 

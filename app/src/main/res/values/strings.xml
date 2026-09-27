@@ -62,6 +62,12 @@
 	<string name="search_resolution_none">Any</string>
 	<string name="search_resolution_atleast_value">≥ %1$s</string>
 	<string name="search_resolutions_count">%1$d exact resolutions</string>
+	<string name="search_ratio">Format</string>
+	<string name="search_ratio_none">Any</string>
+	<string name="search_ratio_landscape">Landscape</string>
+	<string name="search_ratio_portrait">Portrait</string>
+	<string name="search_ratio_square">Square</string>
+	<string name="search_ratio_exact">Also exact ratios</string>
 	<string name="search_account_missing_purity">Your wallhaven account does not allow: %1$s</string>
 	<string name="search_open_account_settings">Open wallhaven settings</string>
 	<string name="cd_edit_search_filters">Edit search filters</string>

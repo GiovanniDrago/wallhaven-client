@@ -18,6 +18,7 @@ data class WallhavenQuery(
 	val color: String?,
 	val atleast: String?,
 	val resolutions: String?,
+	val ratios: String?,
 	val key: String
 ) {
 	/** Wallhaven rejects nsfw results without a key, while sketchy stays available. */

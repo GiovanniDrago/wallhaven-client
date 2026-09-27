@@ -65,6 +65,11 @@ class FilterPreferences @Inject constructor(
 			} else {
 				preferences[KEY_SEARCH_RESOLUTIONS] = updated.resolutions.toSet()
 			}
+			if (updated.ratios.isEmpty()) {
+				preferences.remove(KEY_SEARCH_RATIOS)
+			} else {
+				preferences[KEY_SEARCH_RATIOS] = updated.ratios.toSet()
+			}
 		}
 	}
 }
@@ -92,7 +97,8 @@ private fun Preferences.toSearchOptions(): SearchOptions = SearchOptions(
 	nsfw = this[KEY_SEARCH_NSFW] ?: false,
 	color = this[KEY_SEARCH_COLOR]?.takeIf { it.isNotBlank() },
 	atleast = this[KEY_SEARCH_ATLEAST]?.takeIf { it.isNotBlank() },
-	resolutions = this[KEY_SEARCH_RESOLUTIONS]?.toList().orEmpty()
+	resolutions = this[KEY_SEARCH_RESOLUTIONS]?.toList().orEmpty(),
+	ratios = this[KEY_SEARCH_RATIOS]?.toList().orEmpty()
 )
 
 private fun String.toSorting(): Sorting? = Sorting.entries.firstOrNull { it.name == this }
@@ -116,3 +122,4 @@ private val KEY_SEARCH_NSFW = booleanPreferencesKey("search_nsfw")
 private val KEY_SEARCH_COLOR = stringPreferencesKey("search_color")
 private val KEY_SEARCH_ATLEAST = stringPreferencesKey("search_atleast")
 private val KEY_SEARCH_RESOLUTIONS = stringSetPreferencesKey("search_resolutions")
+private val KEY_SEARCH_RATIOS = stringSetPreferencesKey("search_ratios")

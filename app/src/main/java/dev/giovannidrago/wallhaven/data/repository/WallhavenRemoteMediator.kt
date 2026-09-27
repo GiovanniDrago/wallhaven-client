@@ -76,6 +76,7 @@ class WallhavenRemoteMediator(
 				color = effectiveQuery.color,
 				atleast = effectiveQuery.atleast,
 				resolutions = effectiveQuery.resolutions,
+				ratios = effectiveQuery.ratios,
 				page = page,
 				apiKey = apiKey
 			)
@@ -147,6 +148,7 @@ private fun buildRequestSummary(query: WallhavenQuery, hasKey: Boolean, page: In
 	query.color?.let { append(" · color=").append(it) }
 	query.atleast?.let { append(" · atleast=").append(it) }
 	query.resolutions?.let { append(" · res=").append(it) }
+	query.ratios?.let { append(" · ratios=").append(it) }
 	append(" · key=").append(if (hasKey) "yes" else "no")
 	append(" · page=").append(page)
 }
