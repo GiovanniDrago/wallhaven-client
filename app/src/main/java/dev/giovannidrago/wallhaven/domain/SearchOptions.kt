@@ -17,7 +17,7 @@ enum class SearchSorting(val apiValue: String, val topRange: String? = null) {
  */
 data class SearchOptions(
 	val query: String = "",
-	val sorting: SearchSorting = SearchSorting.RELEVANCE,
+	val sorting: SearchSorting = SearchSorting.LATEST,
 	val general: Boolean = true,
 	val anime: Boolean = true,
 	val people: Boolean = true,
@@ -55,7 +55,7 @@ data class SearchOptions(
 
 	val activeFilterCount: Int
 		get() = listOf(
-			sorting != SearchSorting.RELEVANCE,
+			sorting != SearchSorting.LATEST,
 			!general || !anime || !people,
 			!sfw || sketchy || nsfw,
 			color != null,

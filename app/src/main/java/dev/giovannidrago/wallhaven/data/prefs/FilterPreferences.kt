@@ -88,7 +88,7 @@ private fun Preferences.toFilters(): WallhavenFilters {
 }
 
 private fun Preferences.toSearchOptions(): SearchOptions = SearchOptions(
-	sorting = this[KEY_SEARCH_SORTING]?.toSearchSorting() ?: SearchSorting.RELEVANCE,
+	sorting = this[KEY_SEARCH_SORTING]?.toSearchSorting() ?: SearchSorting.LATEST,
 	general = this[KEY_SEARCH_GENERAL] ?: true,
 	anime = this[KEY_SEARCH_ANIME] ?: true,
 	people = this[KEY_SEARCH_PEOPLE] ?: true,

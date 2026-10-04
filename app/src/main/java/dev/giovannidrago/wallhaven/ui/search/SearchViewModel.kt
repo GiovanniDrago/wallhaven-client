@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -60,14 +59,9 @@ class SearchViewModel @Inject constructor(
 			.map { it.trim() }
 			.distinctUntilChanged(),
 		filterPreferences.searchOptions
-	) { text, storedOptions -> storedOptions.copy(query = text) to text }
-		.flatMapLatest { (searchOptions, text) ->
-			if (text.isBlank()) {
-				flowOf(PagingData.empty<WallpaperEntity>())
-			} else {
-				repository.search(searchOptions)
-			}
-		}
+	) { text, storedOptions -> storedOptions.copy(query = text) }
+		// The search runs even with a blank text: wallhaven accepts filter-only listings.
+		.flatMapLatest { searchOptions -> repository.search(searchOptions) }
 		.cachedIn(viewModelScope)
 
 	fun onQueryChange(value: String) {

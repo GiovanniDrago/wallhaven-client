@@ -50,6 +50,7 @@ fun SearchFilterSheet(
 	options: SearchOptions,
 	apiKeyPresent: Boolean,
 	accountPurity: Set<String>,
+	queryIsBlank: Boolean,
 	onDismiss: () -> Unit,
 	onSortingChange: (SearchSorting) -> Unit,
 	onCategoryChange: (CategoryFilter, Boolean) -> Unit,
@@ -90,7 +91,14 @@ fun SearchFilterSheet(
 				}
 			}
 
-			FilterSection(title = stringResource(R.string.search_sorting)) {
+			FilterSection(
+				title = stringResource(R.string.search_sorting),
+				subtitle = if (queryIsBlank && options.sorting == SearchSorting.RELEVANCE) {
+					stringResource(R.string.search_relevance_requires_text)
+				} else {
+					null
+				}
+			) {
 				SearchSorting.entries.forEach { sorting ->
 					FilterChip(
 						selected = options.sorting == sorting,

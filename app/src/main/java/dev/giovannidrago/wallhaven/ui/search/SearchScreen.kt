@@ -129,13 +129,7 @@ fun SearchScreen(
 			)
 			WallpaperGrid(
 				items = items,
-				emptyText = stringResource(
-					if (query.isBlank()) {
-						R.string.empty_search
-					} else {
-						R.string.empty_search_no_results
-					}
-				),
+				emptyText = stringResource(R.string.empty_search_no_results),
 				onWallpaperClick = onWallpaperClick,
 				onToggleFavorite = viewModel::toggleFavorite,
 				modifier = Modifier.weight(1f)
@@ -148,6 +142,7 @@ fun SearchScreen(
 			options = options,
 			apiKeyPresent = apiKeyPresent,
 			accountPurity = accountPurity,
+			queryIsBlank = query.isBlank(),
 			onDismiss = { showFilters = false },
 			onSortingChange = viewModel::setSorting,
 			onCategoryChange = viewModel::setCategory,
@@ -182,7 +177,7 @@ private fun FilterSummary(options: SearchOptions, onClick: () -> Unit) {
 			}
 			add(labels.joinToString(" · "))
 		}
-		if (options.sorting != SearchSorting.RELEVANCE) {
+		if (options.sorting != SearchSorting.LATEST) {
 			add(stringResource(options.sorting.labelRes()))
 		}
 		options.color?.let { add("#$it") }

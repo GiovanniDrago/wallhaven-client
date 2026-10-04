@@ -12,14 +12,23 @@ import org.junit.Test
 
 class SearchOptionsTest {
 	@Test
-	fun `defaults use relevance, sfw and no color`() {
+	fun `defaults use latest, sfw and no color`() {
 		val options = SearchOptions()
 
-		assertEquals(SearchSorting.RELEVANCE, options.sorting)
+		assertEquals(SearchSorting.LATEST, options.sorting)
 		assertNull(options.color)
 		assertNull(options.atleast)
 		assertEquals(0, options.activeFilterCount)
+		assertEquals("search|date_added|111|100|||||", options.key)
+	}
+
+	@Test
+	fun `relevance stays selected without a text`() {
+		val options = SearchOptions(sorting = SearchSorting.RELEVANCE)
+
 		assertEquals("search|relevance|111|100|||||", options.key)
+		assertEquals("relevance", options.toQuery().sorting)
+		assertEquals(1, options.activeFilterCount)
 	}
 
 	@Test
@@ -42,9 +51,9 @@ class SearchOptionsTest {
 		val options = SearchOptions(resolutions = listOf("3840x2160", "1920x1080"))
 
 		assertEquals("1920x1080,3840x2160", options.resolutionsValue)
-		assertEquals("search|relevance|111|100|||1920x1080,3840x2160||", options.key)
+		assertEquals("search|date_added|111|100|||1920x1080,3840x2160||", options.key)
 		assertEquals(
-			"search|relevance|111|100||1920x1080|1920x1080,3840x2160||",
+			"search|date_added|111|100||1920x1080|1920x1080,3840x2160||",
 			SearchOptions(atleast = "1920x1080", resolutions = listOf("3840x2160", "1920x1080")).key
 		)
 	}
@@ -54,7 +63,7 @@ class SearchOptionsTest {
 		val options = SearchOptions(ratios = listOf("9x18", "9x16"))
 
 		assertEquals("9x16,9x18", options.ratiosValue)
-		assertEquals("search|relevance|111|100||||9x16,9x18|", options.key)
+		assertEquals("search|date_added|111|100||||9x16,9x18|", options.key)
 	}
 
 	@Test

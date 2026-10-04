@@ -38,8 +38,7 @@
 
 	<string name="empty_gallery">Nessun wallpaper trovato</string>
 	<string name="empty_favorites">Nessun preferito. Tocca il cuore su un wallpaper.</string>
-	<string name="empty_search">Scrivi per cercare su wallhaven.</string>
-	<string name="empty_search_no_results">Nessun wallpaper trovato per questa ricerca.</string>
+	<string name="empty_search_no_results">Nessun wallpaper con i filtri selezionati.</string>
 	<string name="search_hint">Tag, uploader, id:, @utente…</string>
 	<string name="cd_search_filters">Filtri di ricerca</string>
 	<string name="search_filters">Filtri di ricerca</string>
@@ -50,6 +49,7 @@
 	<string name="search_sorting_favorites">Preferiti</string>
 	<string name="search_sorting_toplist">Top 1 mese</string>
 	<string name="search_sorting_random">Casuale</string>
+	<string name="search_relevance_requires_text">Rilevanza richiede un testo di ricerca</string>
 	<string name="search_categories">Categorie</string>
 	<string name="search_purity">Purezza</string>
 	<string name="search_color">Colore</string>

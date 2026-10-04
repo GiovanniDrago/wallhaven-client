@@ -8,7 +8,8 @@ Private Android client for [wallhaven.cc](https://wallhaven.cc), built with Kotl
 - Search on the wallhaven API with its own persisted filters: relevance and other sortings,
   categories, independent SFW/Sketchy/NSFW purity, minimum and exact resolutions, orientation
   presets (landscape, portrait, square) with exact aspect ratios, and the wallhaven color palette.
-  A summary line always shows the filters currently applied.
+  Results load immediately and the search works with filters only, no text required. A summary
+  line always shows the filters currently applied.
 - Left drawer with favorites, settings and content toggles (NSFW, sketchy, people, anime, general).
 - Detail screen with zoomable image, full metadata, tag chips, download and favorite buttons.
 - Downloads saved to `Pictures/Wallhaven` through MediaStore.
