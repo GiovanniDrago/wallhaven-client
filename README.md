@@ -1,6 +1,9 @@
 # Wallhaven Client
 
-Private Android client for [wallhaven.cc](https://wallhaven.cc), built with Kotlin and Jetpack Compose.
+Unofficial Android client for [wallhaven.cc](https://wallhaven.cc), built with Kotlin and Jetpack Compose.
+
+Wallhaven Client is not affiliated with wallhaven.cc. The site and all the wallpapers shown or
+downloaded through the app belong to their respective owners.
 
 ## Features
 
@@ -30,6 +33,9 @@ The APK is built by GitHub Actions:
   release; `scripts/deliver-to-shared.sh` copies it into the Android shared folder.
 
 ## License
+
+Wallhaven Client is released under the [GNU General Public License v3.0](LICENSE).
+Copyright (C) 2026 Giovanni Drago.
 
 The secure API key storage pattern is adapted from
 [Wallhavend](https://github.com/Attacktive/Wallhavend-android) (MIT License).
