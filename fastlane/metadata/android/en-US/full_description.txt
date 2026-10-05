@@ -1,0 +1,24 @@
+Wallhaven Client is an unofficial Android client for wallhaven.cc, built with
+Kotlin and Jetpack Compose.
+
+Features:
+- gallery of the latest wallpapers with infinite scrolling and pull to refresh
+- search on the wallhaven API with persisted filters: sorting, categories,
+  SFW/Sketchy/NSFW purity, minimum and exact resolutions, orientation presets
+  with exact aspect ratios, and the wallhaven color palette
+- results load immediately with filters only, no text required, and a summary
+  line always shows the filters currently applied
+- left drawer with favorites, settings and content toggles
+- detail screen with zoomable image, full metadata, tag chips, download and
+  favorite buttons
+- downloads saved to Pictures/Wallhaven through MediaStore
+- local Room/SQLite cache: browsed wallpapers, gallery and search results stay
+  available offline and can be favorited
+- settings show the account purity allowed by the API key and a diagnostics
+  card with the last search request and response purity breakdown
+- the wallhaven API key is encrypted with the Android Keystore, excluded from
+  backups and never stored in the wallpaper database or in a request URL
+
+Wallhaven Client is not affiliated with wallhaven.cc. The site and all the
+wallpapers shown or downloaded through the app belong to their respective
+owners.
