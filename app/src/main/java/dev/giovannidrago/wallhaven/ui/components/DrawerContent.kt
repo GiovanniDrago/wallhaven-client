@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
@@ -39,6 +40,7 @@ fun DrawerContent(
 	apiKeyPresent: Boolean,
 	selectedSection: AppSection,
 	onNavigate: (AppSection) -> Unit,
+	onDonate: () -> Unit,
 	onNsfwChange: (Boolean) -> Unit,
 	onSketchyChange: (Boolean) -> Unit,
 	onCategoryChange: (CategoryFilter, Boolean) -> Unit
@@ -76,6 +78,15 @@ fun DrawerContent(
 				modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
 			)
 		}
+
+		HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+		NavigationDrawerItem(
+			label = { Text(stringResource(R.string.drawer_donate)) },
+			selected = false,
+			onClick = onDonate,
+			icon = { Icon(Icons.Outlined.LocalCafe, contentDescription = null) },
+			modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+		)
 
 		HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 		Text(

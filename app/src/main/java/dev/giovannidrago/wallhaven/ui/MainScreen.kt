@@ -1,5 +1,6 @@
 package dev.giovannidrago.wallhaven.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -16,7 +18,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dev.giovannidrago.wallhaven.BuildConfig
+import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.ui.components.DrawerContent
+import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.detail.DetailScreen
 import dev.giovannidrago.wallhaven.ui.favorites.FavoritesScreen
 import dev.giovannidrago.wallhaven.ui.gallery.GalleryScreen
@@ -36,6 +41,7 @@ fun MainScreen() {
 	val navController = rememberNavController()
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
+	val context = LocalContext.current
 	val viewModel: MainViewModel = hiltViewModel()
 	val filters by viewModel.filters.collectAsStateWithLifecycle()
 	val apiKeyPresent by viewModel.apiKeyPresent.collectAsStateWithLifecycle()
@@ -76,6 +82,12 @@ fun MainScreen() {
 					apiKeyPresent = apiKeyPresent,
 					selectedSection = selectedSection,
 					onNavigate = ::navigateTo,
+					onDonate = {
+						scope.launch { drawerState.close() }
+						if (!openUrl(context, BuildConfig.DONATION_URL)) {
+							Toast.makeText(context, R.string.error_open_link, Toast.LENGTH_SHORT).show()
+						}
+					},
 					onNsfwChange = viewModel::setNsfw,
 					onSketchyChange = viewModel::setSketchy,
 					onCategoryChange = viewModel::setCategory

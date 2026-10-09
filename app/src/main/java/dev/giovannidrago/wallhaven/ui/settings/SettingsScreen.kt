@@ -14,9 +14,11 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,10 +36,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -46,8 +50,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.giovannidrago.wallhaven.BuildConfig
 import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.domain.Sorting
+import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.search.purityLabelRes
 import androidx.compose.foundation.shape.RoundedCornerShape
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +71,9 @@ fun SettingsScreen(
 	val lastRequest by viewModel.lastRequest.collectAsStateWithLifecycle()
 	val lastResponse by viewModel.lastResponse.collectAsStateWithLifecycle()
 	val snackbarHostState = remember { SnackbarHostState() }
+	val scope = rememberCoroutineScope()
+	val context = LocalContext.current
+	val errorOpenLink = stringResource(R.string.error_open_link)
 	var apiKeyInput by rememberSaveable { mutableStateOf("") }
 
 	val messageText = message?.let { stringResource(it.textRes) }
@@ -278,6 +287,20 @@ fun SettingsScreen(
 						style = MaterialTheme.typography.bodySmall,
 						color = MaterialTheme.colorScheme.onSurfaceVariant
 					)
+					FilledTonalButton(
+						onClick = {
+							if (!openUrl(context, BuildConfig.DONATION_URL)) {
+								scope.launch { snackbarHostState.showSnackbar(errorOpenLink) }
+							}
+						}
+					) {
+						Icon(
+							imageVector = Icons.Outlined.LocalCafe,
+							contentDescription = null
+						)
+						Spacer(modifier = Modifier.width(8.dp))
+						Text(stringResource(R.string.settings_donate_button))
+					}
 				}
 			}
 		}

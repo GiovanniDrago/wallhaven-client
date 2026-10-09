@@ -26,7 +26,7 @@ jobs:
       - name: 'Test and build release APK'
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        run: './gradlew test assembleRelease'
+        run: './gradlew test assembleRelease -PDONATION_URL=https://buymeacoffee.com/_takasu_'
 
       - name: 'Rename and checksum'
         id: package

@@ -11,6 +11,7 @@
 	<string name="drawer_search">Cerca</string>
 	<string name="drawer_favorites">Preferiti</string>
 	<string name="drawer_settings">Impostazioni</string>
+	<string name="drawer_donate">Offrimi un caffè</string>
 	<string name="drawer_api_key_configured">API key configurata</string>
 	<string name="drawer_api_key_missing">Solo SFW · aggiungi una API key</string>
 	<string name="drawer_filters">Filtri</string>
@@ -34,6 +35,7 @@
 	<string name="error_network">Errore di rete. Controlla la connessione.</string>
 	<string name="error_invalid_key">API key non valida. Controllala in Impostazioni.</string>
 	<string name="error_rate_limit">Troppe richieste. Attendi un momento.</string>
+	<string name="error_open_link">Non sono riuscito ad aprire il link.</string>
 	<string name="action_retry">Riprova</string>
 
 	<string name="empty_gallery">Nessun wallpaper trovato</string>
@@ -118,6 +120,7 @@
 	<string name="settings_about_title">Informazioni</string>
 	<string name="settings_version">Versione %1$s</string>
 	<string name="settings_privacy_note">La API key è cifrata con Android Keystore e non viene mai salvata nel database dei wallpaper.</string>
+	<string name="settings_donate_button">Offrimi un caffè</string>
 	<string name="settings_account_purity">Purity consentite: %1$s</string>
 	<string name="settings_account_blacklist">Tag in blacklist: %1$d</string>
 	<string name="settings_api_key_invalid_saved">La API key salvata non è più valida. Rigenerala.</string>

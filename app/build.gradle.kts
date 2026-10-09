@@ -19,6 +19,10 @@ val localProperties = Properties().apply {
 
 val keystorePassword: String? = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("KEYSTORE_PASSWORD")
 
+val donationUrl: String = (project.findProperty("DONATION_URL") as String?)
+	?.trim()
+	?: "https://buymeacoffee.com/_takasu_"
+
 android {
 	namespace = "dev.giovannidrago.wallhaven"
 	compileSdk = 37
@@ -30,6 +34,7 @@ android {
 		versionCode = 5
 		versionName = "0.5.0"
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+		buildConfigField("String", "DONATION_URL", "\"$donationUrl\"")
 	}
 
 	signingConfigs {
