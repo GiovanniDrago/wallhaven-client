@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wallhaven-client.local/contracts/album-export.schema.json",
+  "title": "Wallhaven Client Album Export",
+  "description": "Portable JSON document produced by the album export action and accepted by the album import action. Contains the album name and the wallhaven identifiers of all member wallpapers.",
+  "type": "object",
+  "required": ["version", "name", "wallpapers"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Export format version. Import rejects unknown or unsupported versions."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Album name. MUST NOT be empty or whitespace-only after trimming."
+    },
+    "wallpapers": {
+      "type": "array",
+      "description": "Ordered list of wallhaven image identifiers that make up the album.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": true
+}
