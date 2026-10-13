@@ -11,6 +11,7 @@ extensions/*/local-config.yml
 # Machine-local extension cache and backups.
 extensions/.cache/
 extensions/.backup/
+extensions/.registry
 
 # Local dev-install markers (recreated by `specify extension add --dev`).
 extensions/*/.specify-dev/

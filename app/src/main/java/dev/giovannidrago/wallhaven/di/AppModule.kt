@@ -10,12 +10,17 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dev.giovannidrago.wallhaven.data.db.AlbumDao
+import dev.giovannidrago.wallhaven.data.db.DB_MIGRATION_1_2
 import dev.giovannidrago.wallhaven.data.db.WallhavenDao
 import dev.giovannidrago.wallhaven.data.db.WallhavenDatabase
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
 import dev.giovannidrago.wallhaven.data.prefs.SecureApiKeyStore
 import dev.giovannidrago.wallhaven.util.AppLogger
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 private val Context.wallhavenDataStore by preferencesDataStore(name = "wallhaven_filter_prefs")
 
@@ -33,8 +38,8 @@ object AppModule {
 		WallhavenDatabase::class.java,
 		"wallhaven.db"
 	)
-		// The database is a browsable cache; favorites are the only user data and are restored by re-favoriting.
-		.fallbackToDestructiveMigration(dropAllTables = true)
+		// Upgrades preserve favorites and browsed wallpapers; the browsable cache is never dropped.
+		.addMigrations(DB_MIGRATION_1_2)
 		.build()
 
 	@Provides
@@ -43,5 +48,14 @@ object AppModule {
 
 	@Provides
 	@Singleton
+	fun provideAlbumDao(database: WallhavenDatabase): AlbumDao = database.albumDao()
+
+	@Provides
+	@Singleton
 	fun provideApiKeyStore(@ApplicationContext context: Context, logger: AppLogger): ApiKeyStore = SecureApiKeyStore(context, logger)
+
+	@Provides
+	@Singleton
+	@ApplicationScope
+	fun provideApplicationScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 }

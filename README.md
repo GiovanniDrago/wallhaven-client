@@ -19,6 +19,10 @@ downloaded through the app belong to their respective owners.
 - Local Room/SQLite cache: every browsed wallpaper, gallery results and search results are stored,
   so they stay available offline and can be favorited.
 - Favorites stored in the local database.
+- Albums: create named collections from the side menu and add wallpapers to an existing or new album
+  from the detail screen. Album images are cached locally so albums stay viewable offline, and each
+  album can be exported to and imported from a JSON file that contains the identifiers of its
+  wallpapers.
 - Settings show the account purity allowed by the API key and a diagnostics card with the last
   search request and response purity breakdown.
 - The wallhaven API key is encrypted with the Android Keystore in a dedicated preferences file,

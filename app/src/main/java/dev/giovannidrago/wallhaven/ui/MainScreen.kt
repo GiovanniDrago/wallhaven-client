@@ -20,11 +20,15 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.giovannidrago.wallhaven.BuildConfig
 import dev.giovannidrago.wallhaven.R
+import dev.giovannidrago.wallhaven.ui.albums.AlbumDetailScreen
+import dev.giovannidrago.wallhaven.ui.albums.AlbumsScreen
 import dev.giovannidrago.wallhaven.ui.components.DrawerContent
 import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.detail.DetailScreen
 import dev.giovannidrago.wallhaven.ui.favorites.FavoritesScreen
 import dev.giovannidrago.wallhaven.ui.gallery.GalleryScreen
+import dev.giovannidrago.wallhaven.ui.navigation.AlbumDetailRoute
+import dev.giovannidrago.wallhaven.ui.navigation.AlbumRoute
 import dev.giovannidrago.wallhaven.ui.navigation.AppSection
 import dev.giovannidrago.wallhaven.ui.navigation.DetailRoute
 import dev.giovannidrago.wallhaven.ui.navigation.FavoritesRoute
@@ -50,6 +54,8 @@ fun MainScreen() {
 	val selectedSection = when {
 		currentDestination?.hasRoute<SearchRoute>() == true -> AppSection.SEARCH
 		currentDestination?.hasRoute<FavoritesRoute>() == true -> AppSection.FAVORITES
+		currentDestination?.hasRoute<AlbumRoute>() == true -> AppSection.ALBUMS
+		currentDestination?.hasRoute<AlbumDetailRoute>() == true -> AppSection.ALBUMS
 		currentDestination?.hasRoute<SettingsRoute>() == true -> AppSection.SETTINGS
 		else -> AppSection.GALLERY
 	}
@@ -62,6 +68,7 @@ fun MainScreen() {
 			AppSection.GALLERY -> GalleryRoute
 			AppSection.SEARCH -> SearchRoute()
 			AppSection.FAVORITES -> FavoritesRoute
+			AppSection.ALBUMS -> AlbumRoute
 			AppSection.SETTINGS -> SettingsRoute
 		}
 		navController.navigate(route) {
@@ -120,6 +127,18 @@ fun MainScreen() {
 				}
 				composable<SettingsRoute> {
 					SettingsScreen(onOpenDrawer = { scope.launch { drawerState.open() } })
+				}
+				composable<AlbumRoute> {
+					AlbumsScreen(
+						onOpenDrawer = { scope.launch { drawerState.open() } },
+						onOpenAlbum = { albumId -> navController.navigate(AlbumDetailRoute(albumId)) }
+					)
+				}
+				composable<AlbumDetailRoute> {
+					AlbumDetailScreen(
+						onBack = { navController.popBackStack() },
+						onWallpaperClick = { id -> navController.navigate(DetailRoute(id)) }
+					)
 				}
 				composable<DetailRoute> {
 					DetailScreen(

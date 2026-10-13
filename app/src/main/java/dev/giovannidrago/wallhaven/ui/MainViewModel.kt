@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
 import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
+import dev.giovannidrago.wallhaven.data.repository.AlbumRepository
 import dev.giovannidrago.wallhaven.domain.CategoryFilter
 import dev.giovannidrago.wallhaven.domain.Sorting
 import dev.giovannidrago.wallhaven.domain.WallhavenFilters
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class MainViewModel @Inject constructor(
 	private val filterPreferences: FilterPreferences,
-	private val apiKeyStore: ApiKeyStore
+	private val apiKeyStore: ApiKeyStore,
+	private val albumRepository: AlbumRepository
 ) : ViewModel() {
 	val filters: StateFlow<WallhavenFilters> = filterPreferences.filters
 		.stateIn(viewModelScope, SharingStarted.Eagerly, WallhavenFilters())
@@ -26,6 +28,13 @@ class MainViewModel @Inject constructor(
 	val apiKeyPresent: StateFlow<Boolean> = apiKeyStore.apiKey
 		.map { it.isNotBlank() }
 		.stateIn(viewModelScope, SharingStarted.Eagerly, apiKeyStore.apiKey.value.isNotBlank())
+
+	init {
+		// Resolves imported album placeholders and caches missing album images on app start (FR-016).
+		viewModelScope.launch {
+			runCatching { albumRepository.syncPendingWork() }
+		}
+	}
 
 	fun setSketchy(sketchy: Boolean) {
 		viewModelScope.launch {
