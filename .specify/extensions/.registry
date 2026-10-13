@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "extensions": {
+    "git": {
+      "version": "1.0.1",
+      "source": "local",
+      "manifest_hash": "sha256:698cc7089602db44622de39730555db4999cda94ab47195bcfe18f41d08b430a",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "opencode": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-13T09:58:17.744984+00:00"
+    },
+    "apk-delivery": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:2a9fc665f06a57f768aea2813732e9fe0f1c839ac7f4d4f4bc16f018306f07bc",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "opencode": [
+          "speckit.apk-delivery.deliver"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-10-13T09:59:58.450024+00:00"
+    }
+  }
+}

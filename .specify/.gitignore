@@ -7,3 +7,10 @@ feature.json
 
 # Per-machine extension config overrides.
 extensions/*/local-config.yml
+
+# Machine-local extension cache and backups.
+extensions/.cache/
+extensions/.backup/
+
+# Local dev-install markers (recreated by `specify extension add --dev`).
+extensions/*/.specify-dev/

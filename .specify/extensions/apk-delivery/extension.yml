@@ -1,0 +1,38 @@
+schema_version: "1.0"
+
+extension:
+  id: apk-delivery
+  name: "APK Delivery"
+  version: "1.0.0"
+  description: "Build the personal release APK in CI and copy it to the Debian shared folder"
+  author: Giovanni Drago
+  repository: https://github.com/GiovanniDrago/wallhaven-client
+  license: GPL-3.0
+
+requires:
+  speckit_version: ">=0.8.5"
+  tools:
+    - name: gh
+      required: false
+    - name: git
+      required: false
+
+provides:
+  commands:
+    - name: speckit.apk-delivery.deliver
+      file: commands/speckit.apk-delivery.deliver.md
+      description: "Push the feature branch, run the Personal Release workflow and deliver the APK to the shared folder"
+  scripts:
+    - name: apk-delivery-build
+      file: scripts/build-and-deliver.sh
+      description: "Build the personal APK in CI and deliver it to the shared folder"
+      runtimes:
+        - bash
+
+hooks:
+  after_implement:
+    command: speckit.apk-delivery.deliver
+    priority: 20
+    optional: true
+    prompt: "Build the personal APK in CI and deliver it to the Debian shared folder?"
+    description: "Deliver the app APK after implementation"
