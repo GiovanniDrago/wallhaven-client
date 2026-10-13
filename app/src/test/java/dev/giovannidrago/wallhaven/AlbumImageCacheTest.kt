@@ -9,6 +9,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import java.io.File
+import kotlin.io.path.createTempDirectory
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -27,7 +28,7 @@ class AlbumImageCacheTest {
 	fun setUp() {
 		server = MockWebServer()
 		server.start()
-		filesDir = createTempDir(prefix = "album-images")
+		filesDir = createTempDirectory("album-images").toFile()
 	}
 
 	@After
