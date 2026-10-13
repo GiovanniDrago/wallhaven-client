@@ -1,5 +1,6 @@
 package dev.giovannidrago.wallhaven.data.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -32,6 +33,9 @@ data class WallpaperEntity(
 	val tagsText: String?,
 	val favorited: Boolean = false,
 	val favoritedAt: Long? = null,
+	// False marks a placeholder inserted for an imported album identifier that is not yet resolved.
+	@ColumnInfo(defaultValue = "1")
+	val metadataResolved: Boolean = true,
 	val cachedAt: Long
 ) {
 	val aspectRatio: Float

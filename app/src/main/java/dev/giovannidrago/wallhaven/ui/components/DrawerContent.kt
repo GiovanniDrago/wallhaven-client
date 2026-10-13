@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.PhotoLibrary
@@ -185,6 +186,7 @@ private fun AppSection.labelRes(): Int = when (this) {
 	AppSection.GALLERY -> R.string.drawer_gallery
 	AppSection.SEARCH -> R.string.drawer_search
 	AppSection.FAVORITES -> R.string.drawer_favorites
+	AppSection.ALBUMS -> R.string.drawer_albums
 	AppSection.SETTINGS -> R.string.drawer_settings
 }
 
@@ -192,5 +194,6 @@ private fun AppSection.icon(): ImageVector = when (this) {
 	AppSection.GALLERY -> Icons.Outlined.PhotoLibrary
 	AppSection.SEARCH -> Icons.Outlined.Search
 	AppSection.FAVORITES -> Icons.Outlined.FavoriteBorder
+	AppSection.ALBUMS -> Icons.Outlined.CollectionsBookmark
 	AppSection.SETTINGS -> Icons.Outlined.Settings
 }

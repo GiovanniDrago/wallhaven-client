@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LibraryAdd
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AssistChip
@@ -49,7 +50,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +66,7 @@ import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.colors
 import dev.giovannidrago.wallhaven.data.db.tags
+import dev.giovannidrago.wallhaven.ui.albums.AddToAlbumSheet
 import dev.giovannidrago.wallhaven.ui.components.ZoomableImage
 import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.components.toComposeColor
@@ -86,6 +90,10 @@ fun DetailScreen(
 	val downloadFailedMessage = stringResource(R.string.download_failed)
 	val actionOpenLabel = stringResource(R.string.action_open)
 	val currentWallpaper = wallpaper
+	val albumChoices by viewModel.albumChoices.collectAsStateWithLifecycle()
+	val albumEvent by viewModel.albumEvent.collectAsStateWithLifecycle()
+	val albumAddedMessage = stringResource(R.string.album_added)
+	var showAlbumSheet by remember { mutableStateOf(false) }
 
 	LaunchedEffect(downloadState) {
 		when (val state = downloadState) {
@@ -105,6 +113,18 @@ fun DetailScreen(
 				viewModel.consumeDownloadState()
 			}
 			DownloadState.Idle, is DownloadState.Downloading -> Unit
+		}
+	}
+
+	LaunchedEffect(albumEvent) {
+		when (albumEvent) {
+			is AlbumEvent.Added -> {
+				showAlbumSheet = false
+				snackbarHostState.showSnackbar(albumAddedMessage)
+				viewModel.consumeAlbumEvent()
+			}
+			AlbumEvent.BlankName -> viewModel.consumeAlbumEvent()
+			null -> Unit
 		}
 	}
 
@@ -158,11 +178,24 @@ fun DetailScreen(
 				downloadState = downloadState,
 				onDownload = viewModel::download,
 				onToggleFavorite = viewModel::toggleFavorite,
+				onAddToAlbum = {
+					viewModel.loadAlbumChoices()
+					showAlbumSheet = true
+				},
 				onTagClick = onTagClick,
 				onOpenUrl = { url -> openUrl(context, url) },
 				modifier = Modifier.padding(padding)
 			)
 		}
+	}
+
+	if (showAlbumSheet) {
+		AddToAlbumSheet(
+			albums = albumChoices,
+			onAddExisting = viewModel::addToAlbum,
+			onCreateAndAdd = viewModel::createAlbumAndAdd,
+			onDismiss = { showAlbumSheet = false }
+		)
 	}
 }
 
@@ -173,6 +206,7 @@ private fun WallpaperDetailContent(
 	downloadState: DownloadState,
 	onDownload: () -> Unit,
 	onToggleFavorite: () -> Unit,
+	onAddToAlbum: () -> Unit,
 	onTagClick: (String) -> Unit,
 	onOpenUrl: (String) -> Unit,
 	modifier: Modifier = Modifier
@@ -243,6 +277,21 @@ private fun WallpaperDetailContent(
 						overflow = TextOverflow.Ellipsis
 					)
 				}
+			}
+		}
+		item {
+			FilledTonalButton(
+				onClick = onAddToAlbum,
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(horizontal = 16.dp)
+			) {
+				Icon(
+					imageVector = Icons.Default.LibraryAdd,
+					contentDescription = null
+				)
+				Spacer(modifier = Modifier.width(8.dp))
+				Text(stringResource(R.string.album_add_to))
 			}
 		}
 		if (downloadState is DownloadState.Downloading) {
