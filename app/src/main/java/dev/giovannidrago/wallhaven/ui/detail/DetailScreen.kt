@@ -118,7 +118,7 @@ fun DetailScreen(
 
 	LaunchedEffect(albumEvent) {
 		when (albumEvent) {
-			is AlbumEvent.Added -> {
+			AlbumEvent.Added -> {
 				showAlbumSheet = false
 				snackbarHostState.showSnackbar(albumAddedMessage)
 				viewModel.consumeAlbumEvent()
