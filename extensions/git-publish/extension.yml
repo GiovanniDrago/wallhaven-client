@@ -1,0 +1,44 @@
+schema_version: "1.0"
+
+extension:
+  id: git-publish
+  name: "Git Publish"
+  version: "1.0.0"
+  description: "Push the current branch, and commit + push after convergence"
+  author: Giovanni Drago
+  repository: https://github.com/GiovanniDrago/wallhaven-client
+  license: GPL-3.0
+
+requires:
+  speckit_version: ">=0.8.5"
+  tools:
+    - name: git
+      required: false
+
+provides:
+  commands:
+    - name: speckit.git-publish.push
+      file: commands/speckit.git-publish.push.md
+      description: "Push the current branch to origin (set upstream)"
+  scripts:
+    - name: git-publish-push
+      file: scripts/push.sh
+      description: "Push the current branch"
+      runtimes:
+        - bash
+
+hooks:
+  after_implement:
+    - command: speckit.git-publish.push
+      priority: 15
+      optional: false
+      description: "Push the branch before the APK deploy"
+  after_converge:
+    - command: speckit.git.commit
+      priority: 10
+      optional: false
+      description: "Commit the convergence changes"
+    - command: speckit.git-publish.push
+      priority: 20
+      optional: false
+      description: "Push the branch after convergence"

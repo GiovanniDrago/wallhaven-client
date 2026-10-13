@@ -1,0 +1,1 @@
+../../.specify/extensions/git-publish/.specify-dev/agent-commands/opencode/speckit.git-publish.push.md

@@ -1,6 +1,7 @@
 installed:
 - apk-delivery
 - git
+- git-publish
 settings:
   auto_execute_hooks: true
 hooks:
@@ -116,7 +117,7 @@ hooks:
   - extension: git
     command: speckit.git.commit
     enabled: true
-    optional: true
+    optional: false
     priority: 10
     prompt: Commit plan changes?
     description: Auto-commit after implementation planning
@@ -125,7 +126,7 @@ hooks:
   - extension: git
     command: speckit.git.commit
     enabled: true
-    optional: true
+    optional: false
     priority: 10
     prompt: Commit task changes?
     description: Auto-commit after task generation
@@ -134,10 +135,18 @@ hooks:
   - extension: git
     command: speckit.git.commit
     enabled: true
-    optional: true
+    optional: false
     priority: 10
     prompt: Commit implementation changes?
     description: Auto-commit after implementation
+    condition: null
+  - extension: git-publish
+    command: speckit.git-publish.push
+    enabled: true
+    optional: false
+    priority: 15
+    prompt: Execute speckit.git-publish.push?
+    description: Push the branch before the APK deploy
     condition: null
   - extension: apk-delivery
     command: speckit.apk-delivery.deliver
@@ -173,4 +182,21 @@ hooks:
     priority: 10
     prompt: Commit after syncing issues?
     description: Auto-commit after tasks-to-issues conversion
+    condition: null
+  after_converge:
+  - extension: git-publish
+    command: speckit.git.commit
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.git.commit?
+    description: Commit the convergence changes
+    condition: null
+  - extension: git-publish
+    command: speckit.git-publish.push
+    enabled: true
+    optional: false
+    priority: 20
+    prompt: Execute speckit.git-publish.push?
+    description: Push the branch after convergence
     condition: null
