@@ -19,8 +19,8 @@ Added to the typed routes in `ui/navigation/Routes.kt`:
 
 ### AlbumsScreen (`AlbumRoute`)
 
-- **Shows**: a list of albums (name, member count, up to four preview thumbnails), a create action,
-  and an empty state when there are no albums.
+- **Shows**: a list of albums (name, member count, and a single thumbnail of the first member in
+  album order), a create action, and an empty state when there are no albums.
 - **Actions**: create album (name dialog, non-blank validation), open album, delete album (with
   confirmation).
 - **State** (`AlbumsViewModel`): `albums: StateFlow<List<AlbumSummary>>`, `empty: Boolean`,
@@ -32,8 +32,9 @@ Added to the typed routes in `ui/navigation/Routes.kt`:
 - **Shows**: the album name; a paged grid of member wallpapers ordered by `position`; placeholder
   tiles for unresolved imported wallpapers; the cached full-resolution image when available and the
   remote thumbnail otherwise.
-- **Actions**: export album to a JSON document; import into this album (or the list screen); remove a
-  wallpaper from the album; delete the album; open a wallpaper detail.
+- **Actions**: export album to a JSON document; import a JSON document, which always creates a new
+  album and never modifies an existing one; remove a wallpaper from the album; delete the album;
+  open a wallpaper detail.
 - **State** (`AlbumDetailViewModel`): `album: StateFlow<Album?>`,
   `items: Flow<PagingData<AlbumItemEntity>>`, `transferState` (`Idle`, `Working`, `Exported(uri)`,
   `Imported(count)`, `Failed(reason)`) consumed for snackbars.
@@ -79,7 +80,12 @@ The repository, not the UI, owns the JSON codec (`data/album/AlbumExportCodec`),
 - Empty album name: inline validation, no album created (FR-004).
 - Malformed import file: user-facing error, no album created or modified (FR-011).
 - Image download failure: the member stays in the album; the tile shows a retry/`FAILED` indicator;
-  the download is retried later.
+  the download is retried later. A full disk or denied write fails only the affected operation and
+  marks the cache `FAILED` (FR-018).
+- Album preview: the list shows a single thumbnail of the first member, or no thumbnail when empty
+  (FR-002).
+- Import: always creates a new album; duplicate names and repeated imports yield separate albums
+  (FR-010).
 - Duplicate add: treated as success (idempotent), no duplicate row (FR-008).
 
 All user-visible text comes from string resources present in both `values/` and `values-it/`

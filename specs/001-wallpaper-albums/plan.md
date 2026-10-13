@@ -20,6 +20,20 @@ app-private, reference-counted image store fed by the existing OkHttp client; ex
 kotlinx.serialization and the Android Storage Access Framework; the UI follows the existing
 Compose + Hilt + ViewModel layering.
 
+### Clarifications Applied (Session 2026-10-13)
+
+- **Import is always additive**: importing a JSON file always creates a new album; duplicate names
+  and repeated imports produce separate albums, and no existing album is modified (FR-010).
+- **Album preview**: each album row in the list shows the album name and a single thumbnail of the
+  first member in album order (FR-002).
+- **Resolution trigger**: unresolved imported wallpapers are retried on app start and whenever an
+  album is opened, while online (FR-016).
+- **Cleanup**: when a wallpaper leaves its last album, its cached image is deleted; its wallpaper
+  record is deleted only if it is an unresolved import placeholder that is not favorited or browsed
+  (FR-017).
+- **Failure isolation**: a full disk or denied write fails only the affected export/caching
+  operation, leaves memberships intact, and marks caching `FAILED` for retry (FR-018).
+
 ## Technical Context
 
 **Language/Version**: Kotlin 2.4.10, JVM 17
@@ -28,9 +42,10 @@ Compose + Hilt + ViewModel layering.
 Room 2.8.5 + Paging 3.5.1, Retrofit 3.0.0 + kotlinx.serialization 1.11.0, OkHttp 5.5.0, Coil 2.7.0,
 Navigation Compose 2.10.1, AndroidX DataStore. No new dependencies are introduced.
 
-**Storage**: Room (SQLite) remains the single source of truth; new `albums` and `album_entries`
-tables plus JSON columns. Full-resolution album images are stored as files in app-private storage
-(`filesDir`), tracked by the database.
+**Storage**: Room (SQLite) remains the single source of truth; new `albums`, `album_entries` and
+`album_images` tables, plus a `metadataResolved` flag on the existing `wallpapers` table.
+Full-resolution album images are stored as files in app-private storage (`filesDir`), tracked by the
+database.
 
 **Testing**: JVM unit tests with JUnit4, MockK, OkHttp MockWebServer and kotlinx-coroutines-test;
 run by `./gradlew test assembleDebug` (the `Test` CI workflow). No device/emulator is required.

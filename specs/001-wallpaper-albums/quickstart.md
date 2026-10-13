@@ -55,7 +55,9 @@ album tests are:
 
 1. Export "Nature" to a JSON file; inspect it and confirm it matches
    [contracts/album-export.schema.json](./contracts/album-export.schema.json).
-2. Delete the album, then import the file; confirm the album is recreated with the same wallpapers.
+2. Delete the album, then import the file; confirm a **new** album is created with the same
+   wallpapers and that no existing album was modified. Import the same file again and confirm a
+   second, separate album is created (FR-010).
 3. Import a malformed file; confirm an error is shown and no album is created.
 4. Import a file referencing identifiers not present locally while offline; confirm the album is
    created with placeholders. Restore connectivity, reopen the album, and confirm placeholders
@@ -66,6 +68,14 @@ album tests are:
 1. Switch the device language to English and then Italian.
 2. Confirm every new album string is translated in both locales and no user-visible text is
    hardcoded.
+
+### S6 — Cleanup and failure isolation (FR-017, FR-018)
+
+1. Add a wallpaper to an album, confirm its full-resolution image is cached, then delete the album.
+2. Confirm a browsed or favorited wallpaper is still present in the library/favorites, while the
+   cached image of a wallpaper no longer referenced by any album is removed (FR-017).
+3. With storage nearly full, export an album and add a wallpaper to an album; confirm only the
+   affected operation fails with a message and the album membership is unchanged (FR-018).
 
 ## Expected Outcomes
 

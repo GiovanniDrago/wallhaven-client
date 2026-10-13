@@ -24,8 +24,9 @@ chosen, why, and what alternatives were rejected.
   A per-wallpaper row in `album_images` records `localPath`, `status` (`PENDING`, `DOWNLOADING`,
   `CACHED`, `FAILED`), `bytes` and `cachedAt`. The cache is keyed by wallpaper id, not by album, and
   reference-counted through `album_entries`: when no album references a wallpaper, its cached file is
-  deleted. Album grids and the album detail view load images from the local file with Coil when the
-  file is `CACHED`, otherwise from the network thumbnail and a placeholder.
+  deleted. A wallpaper record is deleted only when it is an unresolved import placeholder that is
+  neither favorited nor browsed. Album grids and the album detail view load images from the local
+  file with Coil when the file is `CACHED`, otherwise from the network thumbnail and a placeholder.
 - **Rationale**: The spec requires full-resolution images to remain available offline (FR-012).
   Coil's disk cache is not addressable by key and can be evicted, so it cannot guarantee presence.
   Keying by wallpaper id avoids duplicate downloads when a wallpaper belongs to several albums.
@@ -42,7 +43,9 @@ chosen, why, and what alternatives were rejected.
   wallhaven image identifiers. Files are read/written through the Android Storage Access Framework
   (`ActivityResultContracts.CreateDocument` / `OpenDocument`) so the user chooses the destination and
   no storage permission is required. The codec validates the document (non-blank name, non-blank
-  identifiers) and fails cleanly on malformed input without touching existing albums.
+  identifiers) and fails cleanly on malformed input without touching existing albums. Import is
+  always additive: it creates a new album from the file's name and never modifies an existing album,
+  so duplicate names and repeated imports yield separate albums (FR-010).
 - **Rationale**: The spec explicitly requires a JSON file containing the identifiers of the images
   (FR-009, FR-010). SAF is the platform-standard, permission-free path on minSdk 26. Putting the
   codec and DTOs in `data/album` keeps serialization models out of the UI layer (Principle I).
@@ -111,3 +114,15 @@ chosen, why, and what alternatives were rejected.
   reference them via `stringResource`. No hardcoded user-visible text.
 - **Rationale**: Principle IV requires completeness in both locales.
 - **Alternatives considered**: None; this is a hard requirement.
+
+## R9. Clarified decisions (Session 2026-10-13)
+
+- **Import is additive** (FR-010): always create a new album; never merge into or replace an existing
+  one.
+- **Album list preview** (FR-002): a single thumbnail of the first member in album order.
+- **Resolution trigger** (FR-016): retry unresolved imported wallpapers on app start and on album
+  open, while online.
+- **Cleanup** (FR-017): delete the cached image when the last album reference is gone; delete the
+  wallpaper record only for unresolved placeholders that are neither favorited nor browsed.
+- **Failure isolation** (FR-018): a full disk or denied write fails only the affected operation and
+  marks caching `FAILED` for retry, leaving memberships unchanged.

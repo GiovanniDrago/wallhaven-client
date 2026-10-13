@@ -8,6 +8,16 @@
 
 **Input**: User description: "Aggiungi nel menù laterale la voce \"Album\", con la possibilità di creare e leggere album. Quando apro un'immagine che sia in cerca o nella home, aggiungi in basso un tasto \"Add to album\" con la possibilità di aggiungerlo ad un album esistente o di crearne uno nuovo e aggiungerlo a quello. Questi album devono essere esportabili e importabili, con un JSON che contenga l'identificativo di tutte le immagini che lo compongono. Un album deve avere sempre in cache locale le immagini che contiene"
 
+## Clarifications
+
+### Session 2026-10-13
+
+- Q: When a user imports an album JSON whose name already exists locally, or imports the very same file twice, what should the app do? → A: Always create a new album; duplicate names and repeated imports produce separate albums.
+- Q: On the album list, what should each album's "preview of its contents" show? → A: A single thumbnail of the first member in album order.
+- Q: When should the app try to resolve imported wallpapers that were not available locally? → A: Automatically on app start and whenever an album is opened, while online.
+- Q: When a wallpaper no longer belongs to any album, what should happen to its cached image and any imported placeholder record? → A: Delete the cached image; delete the wallpaper record only if it is an unresolved imported placeholder that is not favorited or browsed; never delete browsed or favorited wallpapers.
+- Q: When storage is full or write access is denied during an album export or image caching, how should the app behave? → A: Fail only the affected operation with a clear error; the album and memberships stay intact; failed caching is marked FAILED and retried later.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Create and browse albums (Priority: P1)
@@ -97,8 +107,8 @@ recreated with the same set of wallpapers.
 
 1. **Given** an album exists, **When** the user exports it, **Then** a JSON file is produced that
    contains the album name and the identifiers of all its images.
-2. **Given** a valid album export file, **When** the user imports it, **Then** an album is created
-   or populated with the referenced wallpapers.
+2. **Given** a valid album export file, **When** the user imports it, **Then** a new album is
+   created from the file's name and wallpapers, and no existing album is modified.
 3. **Given** an imported album references wallpapers, **Then** those wallpapers become available in
    the album and are cached locally according to the offline requirement.
 4. **Given** an invalid, unreadable, or malformed file, **When** the user imports it, **Then** an
@@ -112,14 +122,18 @@ recreated with the same set of wallpapers.
 - What happens when two albums have the same name?
 - What happens when a wallpaper is added to multiple albums?
 - What happens when an exported album is empty (no images)?
-- What happens when the same album file is imported twice?
+- What happens when the same album file is imported twice? Each import creates a separate new album;
+  no existing album is modified.
 - What happens when an imported file references wallpaper identifiers that are not present in the
   local library and the device is offline?
 - What happens when an imported file is not valid JSON, is missing required fields, or has an
   unsupported structure?
 - What happens when an album is deleted, or a wallpaper is removed from an album, while another
-  album still references the same wallpaper?
-- What happens when storage is full or write access is denied during export or caching?
+  album still references the same wallpaper? The cached image is kept while any album references it
+  and cleaned only when the last reference is removed (FR-017).
+- What happens when storage is full or write access is denied during export or caching? Only the
+  affected operation fails: the album and memberships remain, export shows an error, and image
+  caching is marked FAILED and retried later (FR-018).
 - How does the system behave with very large albums (hundreds of wallpapers) for listing, caching,
   and import?
 
@@ -128,8 +142,8 @@ recreated with the same set of wallpapers.
 ### Functional Requirements
 
 - **FR-001**: The side menu MUST include an "Album" entry that opens the Album section.
-- **FR-002**: The Album section MUST list all albums, each showing its name and a representative
-  preview of its contents.
+- **FR-002**: The Album section MUST list all albums, each showing its name and a preview thumbnail
+  of the first member in album order (no thumbnail when the album is empty).
 - **FR-003**: Users MUST be able to create a new album and give it a name.
 - **FR-004**: The system MUST reject album names that are empty or contain only whitespace.
 - **FR-005**: Users MUST be able to open an album and browse the wallpapers it contains, with a clear
@@ -143,7 +157,8 @@ recreated with the same set of wallpapers.
 - **FR-009**: Users MUST be able to export an album to a JSON file that contains the album name and
   the identifiers of all the images it contains.
 - **FR-010**: Users MUST be able to import an album from a JSON file produced by the export, and the
-  system MUST recreate or populate the album with the referenced wallpapers.
+  system MUST always create a new album from the file's name and referenced wallpapers without
+  modifying any existing album; duplicate names and repeated imports yield separate albums.
 - **FR-011**: The system MUST reject an import file that is malformed or missing the required
   structure, showing an error and making no changes to existing albums.
 - **FR-012**: Every album MUST keep the full-resolution image content of the wallpapers it contains
@@ -154,8 +169,15 @@ recreated with the same set of wallpapers.
   favorites.
 - **FR-016**: When an imported album references wallpapers that are not yet in the local library, the
   system MUST still import the album immediately, showing the not-yet-available wallpapers as
-  placeholders, and MUST resolve their metadata and cache their full-resolution image content once
-  connectivity is available.
+  placeholders, and MUST attempt to resolve their metadata and cache their full-resolution image
+  content on app start and whenever the album is opened, while online.
+- **FR-017**: When a wallpaper no longer belongs to any album, the system MUST delete its cached
+  full-resolution image; it MUST delete the wallpaper record only when that record is an unresolved
+  imported placeholder that is neither favorited nor part of the browsed library, and MUST retain
+  browsed or favorited wallpapers (FR-015).
+- **FR-018**: If storage is full or write access is denied, the system MUST fail only the affected
+  export or caching operation with a user-visible error, MUST NOT alter album memberships, and MUST
+  mark the affected image caching as FAILED so it can be retried later.
 
 ### Key Entities *(include if feature involves data)*
 

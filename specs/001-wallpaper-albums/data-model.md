@@ -96,6 +96,11 @@ CACHED ──(last album reference removed)──> row + file deleted
 - `CACHED` is the guarantee behind FR-012 / US3: the album screen renders from `localPath`.
 - When the last `AlbumEntry` referencing a wallpaper is removed (member removed, album deleted, or
   import replaced), the `album_images` row and its file are deleted (reference counting).
+- Cleanup honors FR-017: the cached file is deleted, but a `wallpapers` row is deleted only when it
+  is an unresolved import placeholder (`metadataResolved = false`) that is neither favorited nor in
+  the browsed library. Browsed and favorited wallpapers are never removed (FR-015).
+- A full disk or denied write marks the affected record `FAILED` and leaves memberships unchanged
+  (FR-018).
 
 ### Imported wallpaper resolution (`WallpaperEntity.metadataResolved`)
 
@@ -115,8 +120,8 @@ false (placeholder) ──detail fetch succeeds + image cached──> true
 - **AlbumItemEntity** (query projection, not a table): `@Embedded WallpaperEntity` plus `position`,
   `localPath`, `cacheStatus`. Produced by a `LEFT JOIN` over `album_entries`, `wallpapers` and
   `album_images`, ordered by `position`, and returned by the album `PagingSource`.
-- **AlbumSummary**: album plus member count and up-to-four preview stable ids/thumb urls for the list
-  screen.
+- **AlbumSummary**: album plus member count and a single preview thumbnail of the first member in
+  album order (or none when empty), used by the list screen (FR-002).
 
 ## Validation Rules Summary
 
