@@ -248,3 +248,9 @@ Each increment keeps the previous stories working and adds value without breakin
   survive (research R5, FR-013).
 - No new Gradle dependencies are introduced; the mandated stack is reused as-is.
 - Commit after each task or logical group.
+
+---
+
+## Phase 8: Convergence
+
+- [X] T039 Make adding a wallpaper to an album return immediately: in `app/src/main/java/dev/giovannidrago/wallhaven/data/repository/AlbumRepository.kt` mark the image `PENDING` and start the full-resolution download off the add path instead of awaiting `AlbumImageCache.cache(...)`, so the confirmation and sheet close are not blocked by the download per US2/AC2 + plan: Performance Goals (contradicts)

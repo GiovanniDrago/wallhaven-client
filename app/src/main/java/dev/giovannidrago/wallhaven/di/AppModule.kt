@@ -18,6 +18,9 @@ import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
 import dev.giovannidrago.wallhaven.data.prefs.SecureApiKeyStore
 import dev.giovannidrago.wallhaven.util.AppLogger
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 private val Context.wallhavenDataStore by preferencesDataStore(name = "wallhaven_filter_prefs")
 
@@ -50,4 +53,9 @@ object AppModule {
 	@Provides
 	@Singleton
 	fun provideApiKeyStore(@ApplicationContext context: Context, logger: AppLogger): ApiKeyStore = SecureApiKeyStore(context, logger)
+
+	@Provides
+	@Singleton
+	@ApplicationScope
+	fun provideApplicationScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 }

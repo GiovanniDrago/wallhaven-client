@@ -13,6 +13,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -42,7 +44,8 @@ class AlbumRepositoryTest {
 		apiKeyStore = apiKeyStore,
 		imageCache = imageCache,
 		codec = codec,
-		logger = AppLogger()
+		logger = AppLogger(),
+		applicationScope = CoroutineScope(Dispatchers.Unconfined)
 	)
 
 	@Test

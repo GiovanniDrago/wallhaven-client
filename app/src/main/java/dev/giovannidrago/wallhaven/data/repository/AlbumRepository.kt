@@ -16,6 +16,7 @@ import dev.giovannidrago.wallhaven.data.db.WallhavenDao
 import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.toEntity
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
+import dev.giovannidrago.wallhaven.di.ApplicationScope
 import dev.giovannidrago.wallhaven.domain.Album
 import dev.giovannidrago.wallhaven.domain.AlbumSummary
 import dev.giovannidrago.wallhaven.domain.LOCAL_PAGE_SIZE
@@ -23,9 +24,11 @@ import dev.giovannidrago.wallhaven.util.AppLogger
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 @Singleton
 class AlbumRepository @Inject constructor(
@@ -35,7 +38,8 @@ class AlbumRepository @Inject constructor(
 	private val apiKeyStore: ApiKeyStore,
 	private val imageCache: AlbumImageCache,
 	private val codec: AlbumExportCodec,
-	private val logger: AppLogger
+	private val logger: AppLogger,
+	@ApplicationScope private val applicationScope: CoroutineScope
 ) {
 	fun albums(): Flow<List<AlbumSummary>> = albumDao.observeAlbumSummaries().map { rows ->
 		rows.map { row ->
@@ -95,7 +99,11 @@ class AlbumRepository @Inject constructor(
 			albumDao.upsertAlbumImage(
 				AlbumImageEntity(wallpaperId, null, AlbumImageCache.STATUS_PENDING, null, null, null)
 			)
-			wallpaperDao.findWallpaper(wallpaperId)?.let { imageCache.cache(it) }
+			// The full-resolution download must not block the add confirmation: run it in the
+			// background and let app-start / album-open sync retry it if it fails or is interrupted.
+			wallpaperDao.findWallpaper(wallpaperId)?.let { wallpaper ->
+				applicationScope.launch { imageCache.cache(wallpaper) }
+			}
 		}
 	}
 
