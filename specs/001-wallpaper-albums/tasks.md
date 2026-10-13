@@ -164,7 +164,7 @@ the same wallpapers; import a malformed file and confirm nothing is created.
 - [X] T035 [P] Confirm album entries and exports contain no API key or secret, and that cached-image requests use only the image URL without the `X-API-Key` header (Principle III)
 - [X] T036 [P] Update `README.md` features list to document albums, offline album caching and import/export
 - [X] T037 Verify FR-013 across the version 1→2 upgrade: assemble in CI and confirm no destructive fallback, then document the manual upgrade check (existing favorites/browsed wallpapers survive) in `specs/001-wallpaper-albums/quickstart.md`
-- [ ] T038 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios in `specs/001-wallpaper-albums/quickstart.md`
+- [X] T038 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios in `specs/001-wallpaper-albums/quickstart.md`
 
 ---
 
