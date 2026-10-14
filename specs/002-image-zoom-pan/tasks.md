@@ -106,7 +106,7 @@ centered at fit scale and never leaves the viewport.
 **Purpose**: Localization safety and the quality gate.
 
 - [X] T010 [P] Verify no hardcoded user-visible strings were introduced in the component; if any control with visible text was added, add matching keys to `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
-- [ ] T011 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios Z1–Z4 in `specs/002-image-zoom-pan/quickstart.md`
+- [X] T011 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios Z1–Z4 in `specs/002-image-zoom-pan/quickstart.md`
 
 ---
 
