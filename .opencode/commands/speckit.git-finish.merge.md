@@ -1,0 +1,1 @@
+../../.specify/extensions/git-finish/.specify-dev/agent-commands/opencode/speckit.git-finish.merge.md

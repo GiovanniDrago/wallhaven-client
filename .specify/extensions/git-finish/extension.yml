@@ -1,0 +1,35 @@
+schema_version: "1.0"
+
+extension:
+  id: git-finish
+  name: "Git Finish"
+  version: "1.0.0"
+  description: "Merge a finished feature branch into the base branch and push"
+  author: Giovanni Drago
+  repository: https://github.com/GiovanniDrago/wallhaven-client
+  license: GPL-3.0
+
+requires:
+  speckit_version: ">=0.8.5"
+  tools:
+    - name: git
+      required: false
+
+provides:
+  commands:
+    - name: speckit.git-finish.merge
+      file: commands/speckit.git-finish.merge.md
+      description: "Merge the finished feature branch into the base branch and push"
+  scripts:
+    - name: git-finish-merge
+      file: scripts/finish.sh
+      description: "Merge the feature branch into the base branch and push"
+      runtimes:
+        - bash
+
+hooks:
+  after_converge:
+    - command: speckit.git-finish.merge
+      priority: 30
+      optional: false
+      description: "Merge the converged feature into the base branch"

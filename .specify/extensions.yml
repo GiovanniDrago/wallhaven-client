@@ -1,6 +1,7 @@
 installed:
 - apk-delivery
 - git
+- git-finish
 - git-publish
 settings:
   auto_execute_hooks: true
@@ -199,4 +200,12 @@ hooks:
     priority: 20
     prompt: Execute speckit.git-publish.push?
     description: Push the branch after convergence
+    condition: null
+  - extension: git-finish
+    command: speckit.git-finish.merge
+    enabled: true
+    optional: false
+    priority: 30
+    prompt: Execute speckit.git-finish.merge?
+    description: Merge the converged feature into the base branch
     condition: null
