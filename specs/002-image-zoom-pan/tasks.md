@@ -33,7 +33,7 @@ Single Android application module. Component under
 
 **Purpose**: Confirm the change needs no new dependencies and no new user-visible strings.
 
-- [ ] T001 Confirm the feature requires no new Gradle dependencies (leave `app/build.gradle.kts` and `gradle/libs.versions.toml` unchanged) and no new user-visible strings (leave `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` unchanged unless a text control is added)
+- [X] T001 Confirm the feature requires no new Gradle dependencies (leave `app/build.gradle.kts` and `gradle/libs.versions.toml` unchanged) and no new user-visible strings (leave `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` unchanged unless a text control is added)
 
 ---
 
@@ -43,8 +43,8 @@ Single Android application module. Component under
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 [P] Create `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` with pure functions `fitContentSize(container, imageWidth, imageHeight)`, `clampScale(scale)` and constants `MIN_SCALE = 1f`, `MAX_SCALE = 6f`, `DOUBLE_TAP_SCALE`, `maxTranslation(container, content, scale)` and `clampOffset(offset, bounds)`, guarding zero and non-finite values
-- [ ] T003 [P] Write `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt`: `clampScale` clamps to `[1, 6]`; `maxTranslation` is zero when the scaled content fits the viewport and grows with scale; `clampOffset` keeps the offset inside the bounds; the fit view is centered (`bounds = Offset.Zero` → `offset = Offset.Zero`); zero/oversized inputs never produce `NaN` or infinite values
+- [X] T002 [P] Create `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` with pure functions `fitContentSize(container, imageWidth, imageHeight)`, `clampScale(scale)` and constants `MIN_SCALE = 1f`, `MAX_SCALE = 6f`, `DOUBLE_TAP_SCALE`, `maxTranslation(container, content, scale)` and `clampOffset(offset, bounds)`, guarding zero and non-finite values
+- [X] T003 [P] Write `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt`: `clampScale` clamps to `[1, 6]`; `maxTranslation` is zero when the scaled content fits the viewport and grows with scale; `clampOffset` keeps the offset inside the bounds; the fit view is centered (`bounds = Offset.Zero` → `offset = Offset.Zero`); zero/oversized inputs never produce `NaN` or infinite values
 
 **Checkpoint**: Math and its tests are ready - all user stories can now begin.
 
@@ -60,8 +60,8 @@ the fit view; each step follows the gesture.
 
 ### Implementation for User Story 1
 
-- [ ] T004 [US1] Rewrite the gesture handling in `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` to use `Modifier.pointerInput` + `awaitEachGesture`; when two or more pointers are down, read `calculateZoom()`, `calculatePan()` and `calculateCentroid()`, consume those changes, and update `scale` via `clampScale` and `offset` via `clampOffset`; keep the public signature `ZoomableImage(url: String, modifier: Modifier = Modifier)`
-- [ ] T005 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` track the viewport size with `onSizeChanged` and the image intrinsic size from the `SubcomposeAsyncImage` painter state, derive the fitted content size with `fitContentSize`, and drive `graphicsLayer { scaleX; scaleY; translationX; translationY }` from the clamped state
+- [X] T004 [US1] Rewrite the gesture handling in `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` to use `Modifier.pointerInput` + `awaitEachGesture`; when two or more pointers are down, read `calculateZoom()`, `calculatePan()` and `calculateCentroid()`, consume those changes, and update `scale` via `clampScale` and `offset` via `clampOffset`; keep the public signature `ZoomableImage(url: String, modifier: Modifier = Modifier)`
+- [X] T005 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` track the viewport size with `onSizeChanged` and the image intrinsic size from the `SubcomposeAsyncImage` painter state, derive the fitted content size with `fitContentSize`, and drive `graphicsLayer { scaleX; scaleY; translationX; translationY }` from the clamped state
 
 **Checkpoint**: US1 is functional and testable on its own (free bounded two-finger zoom/pan).
 
@@ -77,8 +77,8 @@ zoom/pan/scroll responds immediately.
 
 ### Implementation for User Story 2
 
-- [ ] T006 [US2] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` do not consume single-pointer drags (let the parent scrollable page handle them), key `pointerInput` by the image `url` so state resets cleanly, and ignore gestures until the container is measured and the image is loaded
-- [ ] T007 [US2] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` re-clamp `offset` whenever the viewport size changes (e.g. rotation) and guard against zero/non-finite sizes; extend `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` with cases for these guards
+- [X] T006 [US2] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` do not consume single-pointer drags (let the parent scrollable page handle them), key `pointerInput` by the image `url` so state resets cleanly, and ignore gestures until the container is measured and the image is loaded
+- [X] T007 [US2] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` re-clamp `offset` whenever the viewport size changes (e.g. rotation) and guard against zero/non-finite sizes; extend `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` with cases for these guards
 
 **Checkpoint**: US1 and US2 both work; the screen never gets stuck.
 
@@ -94,8 +94,8 @@ centered at fit scale and never leaves the viewport.
 
 ### Implementation for User Story 3
 
-- [ ] T008 [US3] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` reset `scale`/`offset` to the fit view whenever `url` changes (`LaunchedEffect(url)`), and implement double-tap to toggle between the fit view and a zoomed view centered on the tap point (`DOUBLE_TAP_SCALE`)
-- [ ] T009 [US3] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` ensure pinching out to `MIN_SCALE` restores the exact centered fit (`offset = Offset.Zero`) and that `clampOffset` keeps a visible portion of the image on screen in every direction
+- [X] T008 [US3] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` reset `scale`/`offset` to the fit view whenever `url` changes (`LaunchedEffect(url)`), and implement double-tap to toggle between the fit view and a zoomed view centered on the tap point (`DOUBLE_TAP_SCALE`)
+- [X] T009 [US3] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` ensure pinching out to `MIN_SCALE` restores the exact centered fit (`offset = Offset.Zero`) and that `clampOffset` keeps a visible portion of the image on screen in every direction
 
 **Checkpoint**: All three user stories are independently functional.
 
@@ -105,7 +105,7 @@ centered at fit scale and never leaves the viewport.
 
 **Purpose**: Localization safety and the quality gate.
 
-- [ ] T010 [P] Verify no hardcoded user-visible strings were introduced in the component; if any control with visible text was added, add matching keys to `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
+- [X] T010 [P] Verify no hardcoded user-visible strings were introduced in the component; if any control with visible text was added, add matching keys to `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
 - [ ] T011 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios Z1–Z4 in `specs/002-image-zoom-pan/quickstart.md`
 
 ---
