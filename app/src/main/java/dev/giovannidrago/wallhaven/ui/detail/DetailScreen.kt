@@ -3,6 +3,7 @@ package dev.giovannidrago.wallhaven.ui.detail
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,12 +51,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,6 +70,7 @@ import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
 import dev.giovannidrago.wallhaven.data.db.colors
 import dev.giovannidrago.wallhaven.data.db.tags
 import dev.giovannidrago.wallhaven.ui.albums.AddToAlbumSheet
+import dev.giovannidrago.wallhaven.ui.components.FULLSCREEN_MAX_SCALE
 import dev.giovannidrago.wallhaven.ui.components.ZoomableImage
 import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.components.toComposeColor
@@ -94,6 +98,7 @@ fun DetailScreen(
 	val albumEvent by viewModel.albumEvent.collectAsStateWithLifecycle()
 	val albumAddedMessage = stringResource(R.string.album_added)
 	var showAlbumSheet by remember { mutableStateOf(false) }
+	var fullScreen by remember { mutableStateOf(false) }
 
 	LaunchedEffect(downloadState) {
 		when (val state = downloadState) {
@@ -128,6 +133,9 @@ fun DetailScreen(
 		}
 	}
 
+	BackHandler(enabled = fullScreen) { fullScreen = false }
+
+	Box(modifier = Modifier.fillMaxSize()) {
 	Scaffold(
 		topBar = {
 			TopAppBar(
@@ -184,8 +192,15 @@ fun DetailScreen(
 				},
 				onTagClick = onTagClick,
 				onOpenUrl = { url -> openUrl(context, url) },
+				onImageTap = { fullScreen = true },
+				resetKey = fullScreen,
 				modifier = Modifier.padding(padding)
 			)
+		}
+	}
+
+		if (fullScreen && currentWallpaper != null) {
+			FullScreenImage(url = currentWallpaper.path, onClose = { fullScreen = false })
 		}
 	}
 
@@ -209,6 +224,8 @@ private fun WallpaperDetailContent(
 	onAddToAlbum: () -> Unit,
 	onTagClick: (String) -> Unit,
 	onOpenUrl: (String) -> Unit,
+	onImageTap: () -> Unit,
+	resetKey: Any,
 	modifier: Modifier = Modifier
 ) {
 	LazyColumn(
@@ -216,12 +233,15 @@ private fun WallpaperDetailContent(
 		contentPadding = PaddingValues(bottom = 32.dp)
 	) {
 		item {
-			ZoomableImage(
-				url = wallpaper.path,
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(horizontal = 8.dp)
-			)
+			key(resetKey) {
+				ZoomableImage(
+					url = wallpaper.path,
+					onSingleTap = onImageTap,
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(horizontal = 8.dp)
+				)
+			}
 		}
 		item {
 			Row(
@@ -449,6 +469,28 @@ private fun InfoRow(
 						Modifier
 					}
 				)
+		)
+	}
+}
+
+/**
+ * Immersive full-screen image viewer hosted by the detail screen: black background, free zoom up to
+ * [FULLSCREEN_MAX_SCALE], single-finger panning, and exit on a single tap.
+ */
+@Composable
+private fun FullScreenImage(url: String, onClose: () -> Unit) {
+	Box(
+		modifier = Modifier
+			.fillMaxSize()
+			.background(Color.Black)
+	) {
+		ZoomableImage(
+			url = url,
+			maxScale = FULLSCREEN_MAX_SCALE,
+			singleFingerPan = true,
+			fillParent = true,
+			onSingleTap = onClose,
+			modifier = Modifier.fillMaxSize()
 		)
 	}
 }

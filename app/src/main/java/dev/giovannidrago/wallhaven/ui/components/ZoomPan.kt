@@ -6,14 +6,19 @@ import kotlin.math.roundToInt
 
 const val MIN_SCALE = 1f
 const val MAX_SCALE = 6f
+const val FULLSCREEN_MAX_SCALE = 20f
 const val DOUBLE_TAP_SCALE = 2.5f
 
-/** Clamps the zoom factor to the supported range; non-finite input falls back to the fit scale. */
-fun clampScale(scale: Float): Float {
+/**
+ * Clamps the zoom factor to `[MIN_SCALE, max]`; non-finite input falls back to the fit scale and an
+ * invalid maximum falls back to [MAX_SCALE].
+ */
+fun clampScale(scale: Float, max: Float = MAX_SCALE): Float {
 	if (!scale.isFinite()) {
 		return MIN_SCALE
 	}
-	return scale.coerceIn(MIN_SCALE, MAX_SCALE)
+	val safeMax = if (max.isFinite() && max >= MIN_SCALE) max else MAX_SCALE
+	return scale.coerceIn(MIN_SCALE, safeMax)
 }
 
 /**

@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,12 +38,20 @@ import coil.request.ImageRequest
 /**
  * A zoomable, pannable image used by every full-view image in the app.
  *
- * One finger scrolls the surrounding page; two fingers pinch to zoom and drag to pan. Zoom is clamped
- * to [MIN_SCALE]..[MAX_SCALE] and pan is clamped so a visible portion of the image always remains on
- * screen, which is what keeps the view from getting stuck or losing the image.
+ * Inline, one finger scrolls the surrounding page while two fingers pinch to zoom and drag to pan.
+ * When [singleFingerPan] is set (the full-screen viewer) a single-finger drag pans the image instead.
+ * Zoom is clamped to `MIN_SCALE..maxScale` and pan is clamped so a visible portion of the image
+ * always remains on screen, which keeps the view from getting stuck or losing the image.
  */
 @Composable
-fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
+fun ZoomableImage(
+	url: String,
+	modifier: Modifier = Modifier,
+	maxScale: Float = MAX_SCALE,
+	singleFingerPan: Boolean = false,
+	fillParent: Boolean = false,
+	onSingleTap: (() -> Unit)? = null
+) {
 	var scale by remember(url) { mutableFloatStateOf(MIN_SCALE) }
 	var offset by remember(url) { mutableStateOf(Offset.Zero) }
 	var containerSize by remember { mutableStateOf(IntSize.Zero) }
@@ -61,6 +70,7 @@ fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
 	val currentScale by rememberUpdatedState(scale)
 	val currentContainer by rememberUpdatedState(containerSize)
 	val currentContent by rememberUpdatedState(contentSize)
+	val currentOnSingleTap by rememberUpdatedState(onSingleTap)
 
 	Box(
 		modifier = modifier.clipToBounds(),
@@ -87,9 +97,15 @@ fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
 					color = MaterialTheme.colorScheme.error
 				)
 			},
-			modifier = Modifier
-				.fillMaxWidth()
-				.heightIn(min = 200.dp, max = 520.dp)
+			modifier = (
+				if (fillParent) {
+					Modifier.fillMaxSize()
+				} else {
+					Modifier
+						.fillMaxWidth()
+						.heightIn(min = 200.dp, max = 520.dp)
+				}
+				)
 				.onSizeChanged { containerSize = it }
 				.graphicsLayer {
 					scaleX = scale
@@ -97,21 +113,22 @@ fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
 					translationX = offset.x
 					translationY = offset.y
 				}
-				.pointerInput(url, containerSize, contentSize) {
+				.pointerInput(url, containerSize, contentSize, maxScale, singleFingerPan) {
 					awaitEachGesture {
-						// Single-pointer drags are intentionally not consumed so the parent
-						// scrollable page keeps scrolling; only multi-pointer gestures transform.
+						// Inline, single-pointer drags are intentionally not consumed so the parent
+						// scrollable page keeps scrolling; the full-screen viewer consumes them.
 						awaitFirstDown(requireUnconsumed = false)
 						var transforming = false
 						do {
 							val event = awaitPointerEvent()
-							if (event.changes.count { it.pressed } >= 2) {
+							val pressedCount = event.changes.count { it.pressed }
+							if (pressedCount >= 2 || singleFingerPan) {
 								transforming = true
 							}
 							if (transforming) {
-								val zoomChange = event.calculateZoom()
+								val zoomChange = if (pressedCount >= 2) event.calculateZoom() else 1f
 								val panChange = event.calculatePan()
-								val newScale = clampScale(scale * zoomChange)
+								val newScale = clampScale(scale * zoomChange, maxScale)
 								val bounds = maxTranslation(containerSize, contentSize, newScale)
 								scale = newScale
 								offset = if (newScale > MIN_SCALE) {
@@ -130,12 +147,13 @@ fun ZoomableImage(url: String, modifier: Modifier = Modifier) {
 				}
 				.pointerInput(url) {
 					detectTapGestures(
+						onTap = { currentOnSingleTap?.invoke() },
 						onDoubleTap = { tap ->
 							if (currentScale > MIN_SCALE) {
 								scale = MIN_SCALE
 								offset = Offset.Zero
 							} else {
-								val target = clampScale(DOUBLE_TAP_SCALE)
+								val target = clampScale(DOUBLE_TAP_SCALE, maxScale)
 								val bounds = maxTranslation(currentContainer, currentContent, target)
 								val centerX = currentContainer.width / 2f
 								val centerY = currentContainer.height / 2f

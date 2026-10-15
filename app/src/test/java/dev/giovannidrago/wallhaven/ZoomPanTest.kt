@@ -2,6 +2,7 @@ package dev.giovannidrago.wallhaven
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
+import dev.giovannidrago.wallhaven.ui.components.FULLSCREEN_MAX_SCALE
 import dev.giovannidrago.wallhaven.ui.components.MAX_SCALE
 import dev.giovannidrago.wallhaven.ui.components.MIN_SCALE
 import dev.giovannidrago.wallhaven.ui.components.clampOffset
@@ -25,6 +26,13 @@ class ZoomPanTest {
 	fun `clamp scale falls back to fit for non finite input`() {
 		assertEquals(MIN_SCALE, clampScale(Float.NaN), 0.0001f)
 		assertEquals(MIN_SCALE, clampScale(Float.POSITIVE_INFINITY), 0.0001f)
+	}
+
+	@Test
+	fun `clamp scale honors a custom higher cap`() {
+		assertEquals(15f, clampScale(15f, FULLSCREEN_MAX_SCALE), 0.0001f)
+		assertEquals(FULLSCREEN_MAX_SCALE, clampScale(100f, FULLSCREEN_MAX_SCALE), 0.0001f)
+		assertEquals(MAX_SCALE, clampScale(100f), 0.0001f)
 	}
 
 	@Test

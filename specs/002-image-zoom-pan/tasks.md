@@ -101,11 +101,11 @@ with one finger; exit with a tap and again with back.
 
 ### Implementation for User Story 4
 
-- [ ] T010 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` add `FULLSCREEN_MAX_SCALE = 20f` and a `max` parameter to `clampScale(scale: Float, max: Float = MAX_SCALE)`; extend `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` with cases for the higher cap (FR-015, FR-012)
-- [ ] T011 [P] [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` add optional parameters `maxScale: Float = MAX_SCALE`, `singleFingerPan: Boolean = false`, `onSingleTap: (() -> Unit)? = null`, keeping existing call sites unchanged (contracts: component contract)
-- [ ] T012 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` implement `singleFingerPan` (consume a one-finger drag and pan the image) and invoke `onSingleTap` on a single tap so it does not fire when a double tap zooms (FR-016, edge cases)
-- [ ] T013 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/detail/DetailScreen.kt` add the full-screen overlay: a `fullScreen` state, a `Box(fillMaxSize).background(Color.Black)` drawn above the `Scaffold` hosting a `ZoomableImage(maxScale = FULLSCREEN_MAX_SCALE, singleFingerPan = true, onSingleTap = exit)`, and `BackHandler(enabled = fullScreen)` to exit (FR-013, FR-014, FR-017)
-- [ ] T014 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/detail/DetailScreen.kt` key the inline image on the `fullScreen` flag so exiting resets it to fit, and wire the inline image's `onSingleTap` to open the viewer; leave the gallery/grid call sites unchanged so the viewer is reachable only from the detail (FR-018, FR-019)
+- [X] T010 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` add `FULLSCREEN_MAX_SCALE = 20f` and a `max` parameter to `clampScale(scale: Float, max: Float = MAX_SCALE)`; extend `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` with cases for the higher cap (FR-015, FR-012)
+- [X] T011 [P] [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` add optional parameters `maxScale: Float = MAX_SCALE`, `singleFingerPan: Boolean = false`, `onSingleTap: (() -> Unit)? = null`, keeping existing call sites unchanged (contracts: component contract)
+- [X] T012 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` implement `singleFingerPan` (consume a one-finger drag and pan the image) and invoke `onSingleTap` on a single tap so it does not fire when a double tap zooms (FR-016, edge cases)
+- [X] T013 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/detail/DetailScreen.kt` add the full-screen overlay: a `fullScreen` state, a `Box(fillMaxSize).background(Color.Black)` drawn above the `Scaffold` hosting a `ZoomableImage(maxScale = FULLSCREEN_MAX_SCALE, singleFingerPan = true, onSingleTap = exit)`, and `BackHandler(enabled = fullScreen)` to exit (FR-013, FR-014, FR-017)
+- [X] T014 [US4] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/detail/DetailScreen.kt` key the inline image on the `fullScreen` flag so exiting resets it to fit, and wire the inline image's `onSingleTap` to open the viewer; leave the gallery/grid call sites unchanged so the viewer is reachable only from the detail (FR-018, FR-019)
 
 **Checkpoint**: All four user stories are independently functional.
 
@@ -113,7 +113,7 @@ with one finger; exit with a tap and again with back.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T015 [P] Verify no hardcoded user-visible strings were introduced; if any control with visible text was added, add matching keys to `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
+- [X] T015 [P] Verify no hardcoded user-visible strings were introduced; if any control with visible text was added, add matching keys to `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
 - [ ] T016 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios Z1–Z5 in `specs/002-image-zoom-pan/quickstart.md`
 
 ---
