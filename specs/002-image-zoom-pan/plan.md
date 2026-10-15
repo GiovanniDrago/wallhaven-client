@@ -139,6 +139,39 @@ Design for the full-screen image view added by the 2026-10-15 clarifications (FR
 Still PASS. UI-only change inside `ui/`; no data/DB writes (II); no secrets (III); no new
 user-visible strings (IV); the clamp math stays pure and JVM-tested (V).
 
+## Focal Zoom & Pan Fidelity Addendum (FR-020, FR-021)
+
+### Problem
+
+`ZoomableImage` transforms the image with `graphicsLayer`, so pointer deltas are reported in the
+**scaled** coordinate space. Pan is therefore divided by the zoom factor: at 6–20× a long finger drag
+moves the image very little. Zoom also scales about the layer centre (the screen centre) instead of
+the pinch centroid.
+
+### Decision
+
+Introduce a pure `transform(...)` in `ZoomPan.kt` that, in one step:
+
+- computes `newScale = clampScale(scale * zoomChange, maxScale)`;
+- centers and clears pan when `newScale <= MIN_SCALE`;
+- shifts the offset to keep the pinch centroid fixed:
+  `offset += focal * (scale - newScale)` where `focal = centroid - containerCentre`;
+- converts the pan to screen pixels: `offset += pan * scale` (undoing the scaled-space division);
+- clamps with `clampOffset(..., maxTranslation(container, content, newScale))`.
+
+`ZoomableImage` passes `event.calculateCentroid()` and `event.calculatePan()` to it.
+
+### Files
+
+- `ui/components/ZoomPan.kt` — new `ZoomPanState` + `transform(...)`.
+- `ui/components/ZoomableImage.kt` — call `transform(...)` instead of ad-hoc scale/offset updates.
+- `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` — centroid-fixed and pan-times-scale
+  cases.
+
+### Constitution Check (addendum)
+
+Still PASS: UI-only; the math stays pure and JVM-tested (V); no data, dependencies, or strings change.
+
 ## Complexity Tracking
 
 No constitution violations; this section is intentionally empty.

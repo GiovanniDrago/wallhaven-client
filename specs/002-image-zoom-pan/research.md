@@ -123,3 +123,17 @@ Each decision records what was chosen, why, and what alternatives were rejected.
   closes the viewer while it is open (FR-018).
 - **Rationale**: Implements the clarification (Option A) and keeps back behavior predictable.
 - **Alternatives considered**: carrying zoom state across (rejected: the user chose fit-on-exit).
+
+## R13. Focal-point zoom and 1:1 panning (FR-020, FR-021)
+
+- **Decision**: Perform the zoom/pan update with a single pure `transform(...)` that (a) clamps the
+  scale, (b) keeps the pinch centroid fixed, (c) converts the reported pan from the scaled coordinate
+  space to screen pixels by multiplying by the current scale, and (d) clamps the offset to bounds.
+- **Rationale**: Because the image is drawn with `graphicsLayer`, pointer deltas arrive in the scaled
+  space, so the raw pan is divided by the zoom factor — the reported "a long finger movement moves the
+  image very little" bug. Multiplying by the scale restores 1:1 finger tracking (FR-021), and shifting
+  the offset by `focal * (oldScale - newScale)` keeps the point between the fingers in place (FR-020).
+- **Alternatives considered**: moving the `pointerInput` outside the `graphicsLayer` (rejected:
+  Compose applies the layer transform at the node level, so this does not reliably change the
+  coordinate space); a pan acceleration multiplier >1 (rejected: the correct fix is 1:1, not faster
+  than the finger).

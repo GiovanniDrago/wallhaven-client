@@ -91,6 +91,32 @@ Validation rules:
 | The viewer is reachable only from the detail screen | FR-019 |
 | Areas not covered by the image are black | FR-014 |
 
+## Transform Function (FR-020, FR-021)
+
+A pure function computes the next view state for one gesture frame:
+
+```kotlin
+fun transform(
+    scale: Float, offset: Offset, centroid: Offset,
+    container: IntSize, content: IntSize,
+    zoomChange: Float, pan: Offset, maxScale: Float
+): ZoomPanState
+```
+
+- `newScale = clampScale(scale * zoomChange, maxScale)`
+- if `newScale <= MIN_SCALE` → `ZoomPanState(MIN_SCALE, Offset.Zero)`
+- `focal = centroid - containerCentre`
+- `offset' = offset + focal * (scale - newScale) + pan * scale`
+- clamp `offset'` with `maxTranslation(container, content, newScale)`
+
+Invariants:
+
+| Rule | Source |
+|------|--------|
+| The point under the pinch centroid stays fixed while zooming | FR-020 |
+| Pan moves the image by the same distance the finger travels, at every scale | FR-021 |
+| Non-finite inputs are absorbed by the clamp helpers | FR-007 |
+
 ## Non-Goals
 
 - No database entities, no PagingSource, no network, no exports. Zoom/pan does not modify the stored

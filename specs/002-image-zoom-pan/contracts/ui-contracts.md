@@ -48,6 +48,11 @@ Rules:
 
 - Only multi-pointer (two or more) gestures are consumed by the image; single-pointer drags are left
   to the parent so page scrolling always works (FR-005).
+- Pinch zoom keeps the point under the midpoint between the fingers fixed (the pinch centroid), not
+  the screen centre (FR-020).
+- Panning moves the image by the same distance the finger(s) travel, at every zoom level; the pan is
+  scaled by the current zoom to compensate for the layer transform, so it never slows down at high
+  zoom (FR-021).
 - After any gesture the user can immediately zoom, pan or scroll again; no gesture path leaves the
   view unable to respond (FR-006).
 - Rapid or repeated gestures MUST NOT crash or freeze the view (FR-007).

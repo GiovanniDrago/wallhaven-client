@@ -66,6 +66,14 @@ Same gate the `Test` workflow runs on every push (Constitution Principle V). The
 5. From the gallery or any grid, tap a thumbnail: it opens the detail as today; no full-screen view
    opens from there.
 
+### Z6 — Zoom focus and pan fidelity (FR-020, FR-021)
+
+1. Pinch with the fingers away from the centre: the area between the fingers stays under the fingers
+   instead of sliding toward the screen centre.
+2. Zoom to a high level and drag a long distance with one finger (full-screen) or two fingers
+   (inline): the image moves the same distance as the finger(s) — it must not slow down as the zoom
+   increases.
+
 ## Expected Outcomes
 
 - All JVM tests pass and the debug APK assembles in CI.

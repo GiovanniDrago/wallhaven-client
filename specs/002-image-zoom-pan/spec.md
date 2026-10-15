@@ -15,6 +15,8 @@
 - Q: When the user taps to open the full-screen image and then exits, what should happen to zoom and pan? → A: Full-screen opens at the fit view; exiting returns the inline image to fit.
 - Q: Where is the full-screen image view available? → A: Only from the image detail screen (tapping the image there); not from the gallery or any grid view.
 - Q: How far should the user be able to zoom in the full-screen view? → A: A very high but bounded cap (about 20× the fit size).
+- Q: Where should zoom focus when pinching? → A: On the midpoint between the two fingers (the pinch centroid), not the screen center.
+- Q: How should panning move the image relative to the finger? → A: The image must follow the finger so a given finger movement moves the image by the same distance; currently a long finger movement moves the image far too little (the pan is slowed down by the zoom level).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -139,6 +141,9 @@ and move with one finger; exit once with a tap and once with back.
 - What happens when the back action is used in the full-screen view versus at the detail level?
 - What happens when the user taps or pinches while the image is still loading in the full-screen
   view?
+- What happens when the pinch centroid is near an edge of the image or already outside it?
+- What happens when panning at a high zoom: the image must track the finger exactly, with no slowdown
+  proportional to the zoom.
 
 ## Requirements *(mandatory)*
 
@@ -177,6 +182,10 @@ and move with one finger; exit once with a tap and once with back.
   to fit.
 - **FR-019**: The full-screen view MUST be reachable only from the image detail screen, never from the
   gallery or any grid view.
+- **FR-020**: Pinch zooming MUST keep the point under the midpoint between the two fingers (the pinch
+  centroid) fixed, so the zoom focuses on the fingers rather than the screen center.
+- **FR-021**: A drag MUST move the image by the same distance the finger(s) travel, at every zoom
+  level; the image movement MUST NOT be reduced as the zoom increases.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -202,6 +211,10 @@ Not applicable: this feature changes image interaction behavior only and introdu
 - **SC-008**: In the full-screen view, a user can zoom to fill the screen and beyond and move to any
   part of the image with a single finger.
 - **SC-009**: The area of the screen not covered by the image in the full-screen view is always black.
+- **SC-010**: Panning moves the image by the same distance as the finger(s) at every zoom level (a long
+  finger drag produces an equally long image movement).
+- **SC-011**: Pinching keeps the area between the fingers in place (the pinch centroid stays fixed)
+  instead of zooming toward the screen center.
 
 ## Assumptions
 
