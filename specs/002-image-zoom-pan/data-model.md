@@ -58,6 +58,39 @@ Viewport resized              ─────►  re-clamp offset to the new bou
 | A gesture never leaves an unrecoverable state | FR-006 |
 | No crash on zero/non-finite sizes or unloaded image | FR-007 |
 
+## Full-Screen Viewer State (US4)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `fullScreen` | `Boolean` | Detail-screen state: whether the full-screen overlay is shown. |
+| viewer `scale` | `Float` | Own instance: `1f <= scale <= FULLSCREEN_MAX_SCALE` (20f). |
+| viewer `offset` | `Offset` | Clamped per axis exactly like the inline view. |
+
+Constants: `MIN_SCALE = 1f`, `MAX_SCALE = 6f` (inline), `FULLSCREEN_MAX_SCALE = 20f`,
+`DOUBLE_TAP_SCALE`.
+
+State transitions:
+
+```text
+Detail (inline image, scale in [1, 6], one finger scrolls the page)
+  │ single tap on the image
+  ▼
+Full-screen viewer (fresh fit; scale in [1, 20]; one finger pans; black background)
+  │ single tap on the image OR system back
+  ▼
+Detail (inline image reset to fit)
+```
+
+Validation rules:
+
+| Rule | Source |
+|------|--------|
+| The viewer opens at fit scale, centered | FR-018 |
+| Exiting returns the inline image to fit | FR-018 |
+| Single tap and double tap in the viewer must not conflict | Edge Cases |
+| The viewer is reachable only from the detail screen | FR-019 |
+| Areas not covered by the image are black | FR-014 |
+
 ## Non-Goals
 
 - No database entities, no PagingSource, no network, no exports. Zoom/pan does not modify the stored

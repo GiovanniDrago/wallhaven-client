@@ -18,9 +18,10 @@ This guide proves the feature works end-to-end. It contains no implementation co
 
 Same gate the `Test` workflow runs on every push (Constitution Principle V). The new test is:
 
-- `ZoomPanTest` — pure math: scale is clamped to `[1, MAX_SCALE]`; `maxTranslation` is zero when the
-  scaled content fits the viewport and grows with scale; `clampOffset` keeps the offset inside the
-  bounds; the fit view is centered; zero/oversized inputs never produce `NaN`/infinite values.
+- `ZoomPanTest` — pure math: scale is clamped to `[1, MAX_SCALE]` (and honors a custom higher cap
+  such as the full-screen 20×); `maxTranslation` is zero when the scaled content fits the viewport and
+  grows with scale; `clampOffset` keeps the offset inside the bounds; the fit view is centered;
+  zero/oversized inputs never produce `NaN`/infinite values.
 
 ## Manual Scenarios
 
@@ -53,6 +54,17 @@ Same gate the `Test` workflow runs on every push (Constitution Principle V). The
 
 1. Open an image and gesture while it is still loading: no jump or crash once it appears.
 2. Rotate the device while zoomed: the image re-clamps to the new viewport and remains visible.
+
+### Z5 — Full-screen viewer (US4, FR-013–FR-019)
+
+1. Open an image detail and single-tap the image: it opens full screen, black where the image does not
+   cover the screen.
+2. Pinch to zoom: it can fill the screen and beyond, up to the high cap (about 20×); a one-finger drag
+   moves the image.
+3. Single-tap the image: the viewer closes and returns to the detail with the image at fit.
+4. Reopen and press the system back action: only the viewer closes, returning to the detail.
+5. From the gallery or any grid, tap a thumbnail: it opens the detail as today; no full-screen view
+   opens from there.
 
 ## Expected Outcomes
 

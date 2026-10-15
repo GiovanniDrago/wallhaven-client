@@ -5,15 +5,34 @@ API, the gesture semantics, and the bounds guarantees it must uphold.
 
 ## Component Contract
 
-`ZoomableImage(url: String, modifier: Modifier = Modifier)` — unchanged public signature.
+`ZoomableImage(url: String, modifier: Modifier = Modifier, maxScale: Float = MAX_SCALE,
+singleFingerPan: Boolean = false, onSingleTap: (() -> Unit)? = null)`.
 
 - **Renders**: the image at fit scale inside a bounded, clipping viewport; shows a loading indicator
   while loading and an error indicator on failure (as today).
 - **State**: internal only (`scale`, `offset`); no state is hoisted and nothing is persisted.
 - **Reset**: whenever `url` changes, the view returns to the fit, centered state.
+- **Parameters**: `maxScale` bounds the zoom (inline `MAX_SCALE = 6f`, full-screen
+  `FULLSCREEN_MAX_SCALE = 20f`); `singleFingerPan` makes a one-finger drag pan the image (full-screen)
+  instead of scrolling the page (inline); `onSingleTap` is invoked on a single tap (inline opens the
+  viewer, full-screen closes it), and must not fire when a double tap zooms.
 
 All full-view images (wallpaper detail opened from gallery, search, favorites and albums) use this
 component, so the behavior applies everywhere (FR-001).
+
+## Full-Screen Viewer Contract
+
+- **Trigger**: a single tap on the image on the detail screen opens the viewer (FR-013). It is not
+  reachable from the gallery or any grid (FR-019).
+- **Appearance**: the viewer covers the whole window with a black background; areas the image does not
+  cover are black (FR-014).
+- **Gestures**: pinch zooms up to `FULLSCREEN_MAX_SCALE` (FR-015); a single finger pans the image
+  (FR-016); double tap still toggles zoom.
+- **Exit**: a single tap on the image or the system back closes the viewer and returns to the detail
+  (FR-017). While the viewer is open, the system back closes the viewer only (it does not leave the
+  detail).
+- **State**: the viewer opens at fit, and closing it returns the inline detail image to fit (FR-018,
+  Clarifications 2026-10-15).
 
 ## Gesture Contract
 

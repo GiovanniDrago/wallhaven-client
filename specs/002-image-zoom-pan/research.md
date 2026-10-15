@@ -76,3 +76,50 @@ Each decision records what was chosen, why, and what alternatives were rejected.
   of image — the root of the "zoom does not work again" symptom.
 - **Alternatives considered**: reusing a single long-lived gesture coroutine (rejected: stale state
   after the image changes).
+
+## R8. Full-screen viewer as an overlay (US4)
+
+- **Decision**: Add the full-screen viewer as an overlay in the image detail screen (state flag +
+  `Box(fillMaxSize, black)` above the `Scaffold`), hosting the same `ZoomableImage` component. Do not
+  create a separate navigation route.
+- **Rationale**: Keeps a single image component, makes the "single tap opens / single tap closes"
+  behavior local and swipeless, and avoids routing/back-stack complexity (FR-013, FR-017).
+- **Alternatives considered**: a dedicated full-screen route (rejected: extra navigation and
+  state-passing for no benefit); a Dialog (rejected: harder to make truly full-bleed and gesture
+  friendly).
+
+## R9. Extend `ZoomableImage` with optional parameters
+
+- **Decision**: Add `maxScale: Float = MAX_SCALE`, `singleFingerPan: Boolean = false`, and
+  `onSingleTap: (() -> Unit)? = null`. Defaults preserve the inline behavior and existing call sites.
+- **Rationale**: The full-screen view needs a higher zoom cap, one-finger panning, and tap-to-exit;
+  the inline view needs a single-tap-to-open hook. Optional parameters keep the public API compatible
+  (constitution) and FR-013/FR-015/FR-016 satisfied.
+- **Alternatives considered**: a second component (rejected: duplicated gesture logic and drift).
+
+## R10. One-finger pan mode for full-screen
+
+- **Decision**: When `singleFingerPan` is true the gesture handler consumes single-pointer drags and
+  pans the image; when false it keeps leaving single-pointer drags to the parent for page scrolling.
+- **Rationale**: In full-screen there is no page to scroll, and the user asked to move the image with a
+  single finger (FR-016); inline keeps the page-scroll behavior (FR-005).
+- **Alternatives considered**: keeping two-finger pan in full-screen (rejected: contradicts the
+  request).
+
+## R11. Zoom caps
+
+- **Decision**: Inline view keeps `MAX_SCALE = 6f`; the full-screen view uses
+  `FULLSCREEN_MAX_SCALE = 20f`. `clampScale` gains a `max` parameter (defaulting to `MAX_SCALE`).
+- **Rationale**: The clarifications ask for a very high but bounded cap in full-screen ("fill the
+  screen and beyond"), while the inline view stays modest (FR-015). A bound keeps the math and tests
+  deterministic.
+- **Alternatives considered**: a single global cap (rejected: either too small for full-screen or too
+  large inline); unlimited zoom (rejected: unusable over-zoom and unbounded math).
+
+## R12. Enter/exit state and back handling
+
+- **Decision**: The viewer opens fresh at fit; exiting (single tap or system back via `BackHandler`)
+  returns the detail image to fit by keying the inline image on the viewer flag. The system back only
+  closes the viewer while it is open (FR-018).
+- **Rationale**: Implements the clarification (Option A) and keeps back behavior predictable.
+- **Alternatives considered**: carrying zoom state across (rejected: the user chose fit-on-exit).

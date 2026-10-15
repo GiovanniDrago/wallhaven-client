@@ -102,6 +102,43 @@ app/src/main/res/values-it/strings.xml    # UPDATE in lockstep with the English 
 existing shared `ZoomableImage` component so every image view benefits with no call-site changes; the
 only new file is a pure-math helper that the component uses and the JVM tests cover.
 
+## Full-Screen Viewer Addendum (User Story 4)
+
+Design for the full-screen image view added by the 2026-10-15 clarifications (FR-013–FR-019).
+
+### Approach
+
+- The viewer is an **overlay** rendered by the image detail screen, not a separate navigation route.
+- `ZoomableImage` gains three optional parameters, so existing call sites are unchanged:
+  - `maxScale: Float = MAX_SCALE` — the inline view keeps 6×; the full-screen view uses
+    `FULLSCREEN_MAX_SCALE = 20f`.
+  - `singleFingerPan: Boolean = false` — full-screen sets `true` so a one-finger drag moves the image
+    and is consumed; inline keeps the single-finger pass-through for page scrolling.
+  - `onSingleTap: (() -> Unit)? = null` — inline opens the viewer; full-screen closes it.
+- The viewer is a `Box(Modifier.fillMaxSize().background(Color.Black))` drawn above the detail
+  `Scaffold`, covering the whole window, hosting a `ZoomableImage` with `maxScale =
+  FULLSCREEN_MAX_SCALE`, `singleFingerPan = true`, and `onSingleTap` = exit. Areas the image does not
+  cover are black (FR-014).
+- `BackHandler(enabled = fullScreen)` exits the viewer (FR-017).
+- Enter/exit state (Clarifications, Option A): the viewer opens fresh at fit; the inline image is
+  keyed by the `fullScreen` flag so it is recreated at fit when the viewer closes (FR-018).
+- Scope: only the detail screen wires `onSingleTap`; gallery and grid thumbnails are untouched
+  (FR-019).
+
+### Files
+
+- `ui/components/ZoomPan.kt` — add `FULLSCREEN_MAX_SCALE = 20f`; `clampScale(scale, max = MAX_SCALE)`.
+- `ui/components/ZoomableImage.kt` — add the three parameters and the single-finger pan mode.
+- `ui/detail/DetailScreen.kt` — full-screen overlay state, black background, `BackHandler`, keyed
+  inline image.
+- `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` — cases for the higher cap.
+- No new strings, no new dependencies, no data changes.
+
+### Constitution Check (addendum)
+
+Still PASS. UI-only change inside `ui/`; no data/DB writes (II); no secrets (III); no new
+user-visible strings (IV); the clamp math stays pure and JVM-tested (V).
+
 ## Complexity Tracking
 
 No constitution violations; this section is intentionally empty.
