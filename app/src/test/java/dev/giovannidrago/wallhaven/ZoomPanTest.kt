@@ -9,6 +9,7 @@ import dev.giovannidrago.wallhaven.ui.components.clampOffset
 import dev.giovannidrago.wallhaven.ui.components.clampScale
 import dev.giovannidrago.wallhaven.ui.components.fitContentSize
 import dev.giovannidrago.wallhaven.ui.components.maxTranslation
+import dev.giovannidrago.wallhaven.ui.components.transform
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -97,5 +98,75 @@ class ZoomPanTest {
 
 		assertTrue(clamped.x.isFinite())
 		assertTrue(clamped.y.isFinite())
+	}
+
+	@Test
+	fun `zoom keeps the point under the centroid fixed`() {
+		val result = transform(
+			scale = 1f,
+			offset = Offset.Zero,
+			centroid = Offset(75f, 50f),
+			container = IntSize(100, 100),
+			content = IntSize(100, 100),
+			zoomChange = 2f,
+			pan = Offset.Zero,
+			maxScale = MAX_SCALE
+		)
+
+		assertEquals(2f, result.scale, 0.0001f)
+		// focal = centroid - centre = (25, 0); offset += focal * (1 - 2) = (-25, 0).
+		assertEquals(-25f, result.offset.x, 0.0001f)
+		assertEquals(0f, result.offset.y, 0.0001f)
+	}
+
+	@Test
+	fun `pan moves the offset by pan times scale`() {
+		val result = transform(
+			scale = 2f,
+			offset = Offset.Zero,
+			centroid = Offset(50f, 50f),
+			container = IntSize(100, 100),
+			content = IntSize(100, 100),
+			zoomChange = 1f,
+			pan = Offset(10f, 0f),
+			maxScale = MAX_SCALE
+		)
+
+		assertEquals(2f, result.scale, 0.0001f)
+		assertEquals(20f, result.offset.x, 0.0001f)
+	}
+
+	@Test
+	fun `pan is clamped to the bounds`() {
+		val result = transform(
+			scale = 2f,
+			offset = Offset.Zero,
+			centroid = Offset(50f, 50f),
+			container = IntSize(100, 100),
+			content = IntSize(100, 100),
+			zoomChange = 1f,
+			pan = Offset(1000f, 0f),
+			maxScale = MAX_SCALE
+		)
+
+		// maxTranslation at scale 2 with 100/100 content inside a 100/100 container is 50.
+		assertEquals(50f, result.offset.x, 0.0001f)
+	}
+
+	@Test
+	fun `transform centers the view at the minimum scale`() {
+		val result = transform(
+			scale = 1f,
+			offset = Offset(30f, 30f),
+			centroid = Offset(10f, 10f),
+			container = IntSize(100, 100),
+			content = IntSize(100, 100),
+			zoomChange = 0.5f,
+			pan = Offset.Zero,
+			maxScale = MAX_SCALE
+		)
+
+		assertEquals(MIN_SCALE, result.scale, 0.0001f)
+		assertEquals(Offset.Zero, result.offset)
 	}
 }

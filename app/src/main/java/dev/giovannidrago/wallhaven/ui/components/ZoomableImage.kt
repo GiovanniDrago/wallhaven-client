@@ -2,6 +2,7 @@ package dev.giovannidrago.wallhaven.ui.components
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -128,14 +129,19 @@ fun ZoomableImage(
 							if (transforming) {
 								val zoomChange = if (pressedCount >= 2) event.calculateZoom() else 1f
 								val panChange = event.calculatePan()
-								val newScale = clampScale(scale * zoomChange, maxScale)
-								val bounds = maxTranslation(containerSize, contentSize, newScale)
-								scale = newScale
-								offset = if (newScale > MIN_SCALE) {
-									clampOffset(offset + panChange, bounds)
-								} else {
-									Offset.Zero
-								}
+								val centroid = event.calculateCentroid()
+								val next = transform(
+									scale = scale,
+									offset = offset,
+									centroid = centroid,
+									container = containerSize,
+									content = contentSize,
+									zoomChange = zoomChange,
+									pan = panChange,
+									maxScale = maxScale
+								)
+								scale = next.scale
+								offset = next.offset
 								event.changes.forEach { change ->
 									if (change.positionChanged()) {
 										change.consume()

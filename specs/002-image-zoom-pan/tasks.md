@@ -127,9 +127,9 @@ drag moves the image far too little because the pan is measured in the scaled co
 **Independent Test**: `ZoomPanTest` asserts the centroid stays fixed while zooming and the offset
 moves by `pan * scale`; manual scenario Z6 confirms the behaviour on a device.
 
-- [ ] T017 [P] [US1] Add `ZoomPanState` and a pure `transform(scale, offset, centroid, container, content, zoomChange, pan, maxScale)` to `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` implementing `newScale = clampScale(scale * zoomChange, maxScale)`, centering at `MIN_SCALE`, `offset += (centroid - containerCentre) * (scale - newScale) + pan * scale`, clamped with `maxTranslation` (FR-020, FR-021)
-- [ ] T018 [P] [US1] Extend `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` with cases asserting the point under the centroid stays fixed while zooming and that pan moves the offset by `pan * scale` (FR-020, FR-021)
-- [ ] T019 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` replace the ad-hoc scale/offset update with `transform(...)`, passing `event.calculateCentroid()` and `event.calculatePan()` (FR-020, FR-021)
+- [X] T017 [P] [US1] Add `ZoomPanState` and a pure `transform(scale, offset, centroid, container, content, zoomChange, pan, maxScale)` to `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` implementing `newScale = clampScale(scale * zoomChange, maxScale)`, centering at `MIN_SCALE`, `offset += (centroid - containerCentre) * (scale - newScale) + pan * scale`, clamped with `maxTranslation` (FR-020, FR-021)
+- [X] T018 [P] [US1] Extend `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` with cases asserting the point under the centroid stays fixed while zooming and that pan moves the offset by `pan * scale` (FR-020, FR-021)
+- [X] T019 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` replace the ad-hoc scale/offset update with `transform(...)`, passing `event.calculateCentroid()` and `event.calculatePan()` (FR-020, FR-021)
 - [ ] T020 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute scenario Z6 in `specs/002-image-zoom-pan/quickstart.md`
 
 ---

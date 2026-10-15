@@ -68,3 +68,34 @@ fun clampOffset(offset: Offset, bounds: Offset): Offset {
 		y = offset.y.coerceIn(-maxY, maxY)
 	)
 }
+
+data class ZoomPanState(val scale: Float, val offset: Offset)
+
+/**
+ * Computes the next view state for one gesture frame.
+ *
+ * The image is drawn with a `graphicsLayer`, so the pointer deltas are reported in the *scaled*
+ * coordinate space; multiplying the pan by the current [scale] restores 1:1 finger tracking. The
+ * offset is shifted so the point under the pinch [centroid] stays fixed, which focuses the zoom on
+ * the fingers instead of the screen centre. The result is clamped so the image can never be lost.
+ */
+fun transform(
+	scale: Float,
+	offset: Offset,
+	centroid: Offset,
+	container: IntSize,
+	content: IntSize,
+	zoomChange: Float,
+	pan: Offset,
+	maxScale: Float = MAX_SCALE
+): ZoomPanState {
+	val newScale = clampScale(scale * zoomChange, maxScale)
+	if (newScale <= MIN_SCALE) {
+		return ZoomPanState(MIN_SCALE, Offset.Zero)
+	}
+	val center = Offset(container.width / 2f, container.height / 2f)
+	val focal = centroid - center
+	val updated = offset + focal * (scale - newScale) + pan * scale
+	val bounds = maxTranslation(container, content, newScale)
+	return ZoomPanState(newScale, clampOffset(updated, bounds))
+}
