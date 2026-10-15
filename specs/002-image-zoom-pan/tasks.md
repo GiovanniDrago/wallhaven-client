@@ -114,7 +114,7 @@ with one finger; exit with a tap and again with back.
 ## Phase 7: Polish & Cross-Cutting Concerns
 
 - [X] T015 [P] Verify no hardcoded user-visible strings were introduced; if any control with visible text was added, add matching keys to `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
-- [ ] T016 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios Z1–Z5 in `specs/002-image-zoom-pan/quickstart.md`
+- [X] T016 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios Z1–Z5 in `specs/002-image-zoom-pan/quickstart.md`
 
 ---
 
