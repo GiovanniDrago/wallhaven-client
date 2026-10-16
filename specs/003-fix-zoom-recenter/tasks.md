@@ -53,7 +53,7 @@ the inline image and the full-screen view.
 ## Phase 3: Polish & Cross-Cutting Concerns
 
 - [X] T005 [P] Confirm no user-visible strings were introduced and both locale files are unchanged in `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
-- [ ] T006 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios F1–F3 in `specs/003-fix-zoom-recenter/quickstart.md`
+- [X] T006 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios F1–F3 in `specs/003-fix-zoom-recenter/quickstart.md`
 
 ---
 
