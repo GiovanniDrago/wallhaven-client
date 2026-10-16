@@ -169,4 +169,21 @@ class ZoomPanTest {
 		assertEquals(MIN_SCALE, result.scale, 0.0001f)
 		assertEquals(Offset.Zero, result.offset)
 	}
+
+	@Test
+	fun `transform keeps the state for unusable inputs`() {
+		val result = transform(
+			scale = 2.5f,
+			offset = Offset(12f, -8f),
+			centroid = Offset.Unspecified,
+			container = IntSize(100, 100),
+			content = IntSize(100, 100),
+			zoomChange = 1f,
+			pan = Offset.Zero,
+			maxScale = MAX_SCALE
+		)
+
+		assertEquals(2.5f, result.scale, 0.0001f)
+		assertEquals(Offset(12f, -8f), result.offset)
+	}
 }

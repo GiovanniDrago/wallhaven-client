@@ -30,7 +30,7 @@ Single Android application module. Component under
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Confirm the fix needs no new Gradle dependencies and no new user-visible strings (leave `app/build.gradle.kts`, `gradle/libs.versions.toml`, `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` unchanged)
+- [X] T001 Confirm the fix needs no new Gradle dependencies and no new user-visible strings (leave `app/build.gradle.kts`, `gradle/libs.versions.toml`, `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` unchanged)
 
 ---
 
@@ -42,9 +42,9 @@ snapping back to the center, in both the inline detail image and the full-screen
 **Independent Test**: Zoom/pan to a corner, lift the fingers, and confirm the view does not move; check
 the inline image and the full-screen view.
 
-- [ ] T002 [P] [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` guard `transform(...)` so it returns the incoming `scale`/`offset` unchanged when `centroid`, `pan`, or `zoomChange` is not finite (FR-001, FR-005)
-- [ ] T003 [P] [US1] In `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` add a case asserting `transform(...)` returns the incoming `scale`/`offset` unchanged for a non-finite/unspecified centroid (FR-001, FR-005)
-- [ ] T004 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` stop transforming once no pointer is pressed (read the pressed count and end the gesture before transforming) so the release frame never updates `scale`/`offset`; keep the while-fingers-down behaviour unchanged (FR-001, FR-002, FR-003, FR-004)
+- [X] T002 [P] [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomPan.kt` guard `transform(...)` so it returns the incoming `scale`/`offset` unchanged when `centroid`, `pan`, or `zoomChange` is not finite (FR-001, FR-005)
+- [X] T003 [P] [US1] In `app/src/test/java/dev/giovannidrago/wallhaven/ZoomPanTest.kt` add a case asserting `transform(...)` returns the incoming `scale`/`offset` unchanged for a non-finite/unspecified centroid (FR-001, FR-005)
+- [X] T004 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/ZoomableImage.kt` stop transforming once no pointer is pressed (read the pressed count and end the gesture before transforming) so the release frame never updates `scale`/`offset`; keep the while-fingers-down behaviour unchanged (FR-001, FR-002, FR-003, FR-004)
 
 **Checkpoint**: US1 works — lifting the fingers no longer recenters the image, inline and full-screen.
 
@@ -52,7 +52,7 @@ the inline image and the full-screen view.
 
 ## Phase 3: Polish & Cross-Cutting Concerns
 
-- [ ] T005 [P] Confirm no user-visible strings were introduced and both locale files are unchanged in `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
+- [X] T005 [P] Confirm no user-visible strings were introduced and both locale files are unchanged in `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` (Principle IV)
 - [ ] T006 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios F1–F3 in `specs/003-fix-zoom-recenter/quickstart.md`
 
 ---

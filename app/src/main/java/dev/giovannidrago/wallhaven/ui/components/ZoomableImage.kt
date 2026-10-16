@@ -120,9 +120,14 @@ fun ZoomableImage(
 						// scrollable page keeps scrolling; the full-screen viewer consumes them.
 						awaitFirstDown(requireUnconsumed = false)
 						var transforming = false
-						do {
+						while (true) {
 							val event = awaitPointerEvent()
 							val pressedCount = event.changes.count { it.pressed }
+							// Once every finger is up, keep the current scale/offset: transforming
+							// the release frame would recenter the image.
+							if (pressedCount == 0) {
+								break
+							}
 							if (pressedCount >= 2 || singleFingerPan) {
 								transforming = true
 							}
@@ -148,7 +153,7 @@ fun ZoomableImage(
 									}
 								}
 							}
-						} while (event.changes.any { it.pressed })
+						}
 					}
 				}
 				.pointerInput(url) {

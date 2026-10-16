@@ -89,6 +89,13 @@ fun transform(
 	pan: Offset,
 	maxScale: Float = MAX_SCALE
 ): ZoomPanState {
+	// A release frame carries unusable deltas (no pressed pointers); keep the state untouched so the
+	// view never recenters or rescales when the fingers are lifted.
+	if (!centroid.x.isFinite() || !centroid.y.isFinite() ||
+		!pan.x.isFinite() || !pan.y.isFinite() || !zoomChange.isFinite()
+	) {
+		return ZoomPanState(scale, offset)
+	}
 	val newScale = clampScale(scale * zoomChange, maxScale)
 	if (newScale <= MIN_SCALE) {
 		return ZoomPanState(MIN_SCALE, Offset.Zero)
