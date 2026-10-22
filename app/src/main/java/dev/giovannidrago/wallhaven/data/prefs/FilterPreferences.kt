@@ -37,6 +37,27 @@ class FilterPreferences @Inject constructor(
 			preferences[KEY_ANIME] = updated.anime
 			preferences[KEY_PEOPLE] = updated.people
 			preferences[KEY_SORTING] = updated.sorting.name
+			preferences[KEY_HOME_SFW] = updated.sfw
+			if (updated.color == null) {
+				preferences.remove(KEY_HOME_COLOR)
+			} else {
+				preferences[KEY_HOME_COLOR] = updated.color
+			}
+			if (updated.atleast == null) {
+				preferences.remove(KEY_HOME_ATLEAST)
+			} else {
+				preferences[KEY_HOME_ATLEAST] = updated.atleast
+			}
+			if (updated.resolutions.isEmpty()) {
+				preferences.remove(KEY_HOME_RESOLUTIONS)
+			} else {
+				preferences[KEY_HOME_RESOLUTIONS] = updated.resolutions.toSet()
+			}
+			if (updated.ratios.isEmpty()) {
+				preferences.remove(KEY_HOME_RATIOS)
+			} else {
+				preferences[KEY_HOME_RATIOS] = updated.ratios.toSet()
+			}
 		}
 	}
 
@@ -83,7 +104,12 @@ private fun Preferences.toFilters(): WallhavenFilters {
 		general = this[KEY_GENERAL] ?: true,
 		anime = this[KEY_ANIME] ?: true,
 		people = this[KEY_PEOPLE] ?: true,
-		sorting = this[KEY_SORTING]?.toSorting() ?: Sorting.LATEST
+		sorting = this[KEY_SORTING]?.toSorting() ?: Sorting.LATEST,
+		sfw = this[KEY_HOME_SFW] ?: true,
+		color = this[KEY_HOME_COLOR]?.takeIf { it.isNotBlank() },
+		atleast = this[KEY_HOME_ATLEAST]?.takeIf { it.isNotBlank() },
+		resolutions = this[KEY_HOME_RESOLUTIONS]?.toList().orEmpty(),
+		ratios = this[KEY_HOME_RATIOS]?.toList().orEmpty()
 	)
 }
 
@@ -112,6 +138,11 @@ private val KEY_GENERAL = booleanPreferencesKey("category_general")
 private val KEY_ANIME = booleanPreferencesKey("category_anime")
 private val KEY_PEOPLE = booleanPreferencesKey("category_people")
 private val KEY_SORTING = stringPreferencesKey("sorting")
+private val KEY_HOME_SFW = booleanPreferencesKey("home_sfw")
+private val KEY_HOME_COLOR = stringPreferencesKey("home_color")
+private val KEY_HOME_ATLEAST = stringPreferencesKey("home_atleast")
+private val KEY_HOME_RESOLUTIONS = stringSetPreferencesKey("home_resolutions")
+private val KEY_HOME_RATIOS = stringSetPreferencesKey("home_ratios")
 private val KEY_SEARCH_SORTING = stringPreferencesKey("search_sorting")
 private val KEY_SEARCH_GENERAL = booleanPreferencesKey("search_category_general")
 private val KEY_SEARCH_ANIME = booleanPreferencesKey("search_category_anime")

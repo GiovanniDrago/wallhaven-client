@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
-import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
 import dev.giovannidrago.wallhaven.data.repository.AlbumRepository
+import dev.giovannidrago.wallhaven.data.repository.HomePersonalizationRepository
 import dev.giovannidrago.wallhaven.data.repository.UpdateCheckResult
 import dev.giovannidrago.wallhaven.data.repository.UpdateRepository
 import dev.giovannidrago.wallhaven.domain.CategoryFilter
@@ -23,13 +23,12 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-	private val filterPreferences: FilterPreferences,
+	private val homePersonalizationRepository: HomePersonalizationRepository,
 	private val apiKeyStore: ApiKeyStore,
 	private val albumRepository: AlbumRepository,
 	private val updateRepository: UpdateRepository
 ) : ViewModel() {
-	val filters: StateFlow<WallhavenFilters> = filterPreferences.filters
-		.stateIn(viewModelScope, SharingStarted.Eagerly, WallhavenFilters())
+	val filters: StateFlow<WallhavenFilters> = homePersonalizationRepository.effective
 
 	val apiKeyPresent: StateFlow<Boolean> = apiKeyStore.apiKey
 		.map { it.isNotBlank() }
@@ -64,35 +63,12 @@ class MainViewModel @Inject constructor(
 		_updateAvailable.value = null
 	}
 
-	fun setSketchy(sketchy: Boolean) {
-		viewModelScope.launch {
-			filterPreferences.update { current -> current.copy(sketchy = sketchy) }
-		}
-	}
+	fun setSketchy(sketchy: Boolean) = homePersonalizationRepository.setQuickSketchy(sketchy)
 
-	fun setNsfw(nsfw: Boolean) {
-		viewModelScope.launch {
-			filterPreferences.update { current -> current.copy(nsfw = nsfw) }
-		}
-	}
+	fun setNsfw(nsfw: Boolean) = homePersonalizationRepository.setQuickNsfw(nsfw)
 
-	fun setCategory(category: CategoryFilter, enabled: Boolean) {
-		viewModelScope.launch {
-			filterPreferences.update { current ->
-				val updated = current.withCategory(category, enabled)
-				// Turning every category off would make wallhaven return nothing, so the last one stays on.
-				if (updated.categoryCount == 0) {
-					current
-				} else {
-					updated
-				}
-			}
-		}
-	}
+	fun setCategory(category: CategoryFilter, enabled: Boolean) =
+		homePersonalizationRepository.setQuickCategory(category, enabled)
 
-	fun setSorting(sorting: Sorting) {
-		viewModelScope.launch {
-			filterPreferences.update { current -> current.copy(sorting = sorting) }
-		}
-	}
+	fun setSorting(sorting: Sorting) = homePersonalizationRepository.setQuickSorting(sorting)
 }

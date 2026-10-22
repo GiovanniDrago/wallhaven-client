@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -200,6 +201,7 @@ private fun AppSection.labelRes(): Int = when (this) {
 	AppSection.SEARCH -> R.string.drawer_search
 	AppSection.FAVORITES -> R.string.drawer_favorites
 	AppSection.ALBUMS -> R.string.drawer_albums
+	AppSection.HOME_PERSONALIZATION -> R.string.drawer_home_personalization
 	AppSection.SETTINGS -> R.string.drawer_settings
 }
 
@@ -208,5 +210,6 @@ private fun AppSection.icon(): ImageVector = when (this) {
 	AppSection.SEARCH -> Icons.Outlined.Search
 	AppSection.FAVORITES -> Icons.Outlined.FavoriteBorder
 	AppSection.ALBUMS -> Icons.Outlined.CollectionsBookmark
+	AppSection.HOME_PERSONALIZATION -> Icons.Outlined.Tune
 	AppSection.SETTINGS -> Icons.Outlined.Settings
 }

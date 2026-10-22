@@ -31,12 +31,14 @@ import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.detail.DetailScreen
 import dev.giovannidrago.wallhaven.ui.favorites.FavoritesScreen
 import dev.giovannidrago.wallhaven.ui.gallery.GalleryScreen
+import dev.giovannidrago.wallhaven.ui.home.HomePersonalizationScreen
 import dev.giovannidrago.wallhaven.ui.navigation.AlbumDetailRoute
 import dev.giovannidrago.wallhaven.ui.navigation.AlbumRoute
 import dev.giovannidrago.wallhaven.ui.navigation.AppSection
 import dev.giovannidrago.wallhaven.ui.navigation.DetailRoute
 import dev.giovannidrago.wallhaven.ui.navigation.FavoritesRoute
 import dev.giovannidrago.wallhaven.ui.navigation.GalleryRoute
+import dev.giovannidrago.wallhaven.ui.navigation.HomePersonalizationRoute
 import dev.giovannidrago.wallhaven.ui.navigation.SearchRoute
 import dev.giovannidrago.wallhaven.ui.navigation.SettingsRoute
 import dev.giovannidrago.wallhaven.ui.search.SearchScreen
@@ -69,6 +71,7 @@ fun MainScreen() {
 		currentDestination?.hasRoute<FavoritesRoute>() == true -> AppSection.FAVORITES
 		currentDestination?.hasRoute<AlbumRoute>() == true -> AppSection.ALBUMS
 		currentDestination?.hasRoute<AlbumDetailRoute>() == true -> AppSection.ALBUMS
+		currentDestination?.hasRoute<HomePersonalizationRoute>() == true -> AppSection.HOME_PERSONALIZATION
 		currentDestination?.hasRoute<SettingsRoute>() == true -> AppSection.SETTINGS
 		else -> AppSection.GALLERY
 	}
@@ -82,6 +85,7 @@ fun MainScreen() {
 			AppSection.SEARCH -> SearchRoute()
 			AppSection.FAVORITES -> FavoritesRoute
 			AppSection.ALBUMS -> AlbumRoute
+			AppSection.HOME_PERSONALIZATION -> HomePersonalizationRoute
 			AppSection.SETTINGS -> SettingsRoute
 		}
 		navController.navigate(route) {
@@ -133,6 +137,9 @@ fun MainScreen() {
 						onOpenDrawer = { scope.launch { drawerState.open() } },
 						onWallpaperClick = { id -> navController.navigate(DetailRoute(id)) }
 					)
+				}
+				composable<HomePersonalizationRoute> {
+					HomePersonalizationScreen(onOpenDrawer = { scope.launch { drawerState.open() } })
 				}
 				composable<SettingsRoute> {
 					SettingsScreen(onOpenDrawer = { scope.launch { drawerState.open() } })

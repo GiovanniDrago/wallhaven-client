@@ -8,7 +8,7 @@ import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.data.api.dto.UserSettingsDto
 import dev.giovannidrago.wallhaven.data.prefs.AccountPreferences
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
-import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
+import dev.giovannidrago.wallhaven.data.repository.HomePersonalizationRepository
 import dev.giovannidrago.wallhaven.data.repository.SearchDiagnostics
 import dev.giovannidrago.wallhaven.data.repository.UpdateCheckResult
 import dev.giovannidrago.wallhaven.data.repository.UpdateRepository
@@ -30,7 +30,7 @@ import retrofit2.HttpException
 class SettingsViewModel @Inject constructor(
 	private val repository: WallpaperRepository,
 	private val apiKeyStore: ApiKeyStore,
-	private val filterPreferences: FilterPreferences,
+	private val homePersonalizationRepository: HomePersonalizationRepository,
 	private val accountPreferences: AccountPreferences,
 	private val updateRepository: UpdateRepository,
 	diagnostics: SearchDiagnostics
@@ -39,8 +39,7 @@ class SettingsViewModel @Inject constructor(
 		.map { it.isNotBlank() }
 		.stateIn(viewModelScope, SharingStarted.Eagerly, apiKeyStore.apiKey.value.isNotBlank())
 
-	val filters: StateFlow<WallhavenFilters> = filterPreferences.filters
-		.stateIn(viewModelScope, SharingStarted.Eagerly, WallhavenFilters())
+	val filters: StateFlow<WallhavenFilters> = homePersonalizationRepository.persisted
 
 	val accountPurity: StateFlow<Set<String>> = accountPreferences.accountPurity
 		.stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
@@ -120,7 +119,7 @@ class SettingsViewModel @Inject constructor(
 
 	fun setSorting(sorting: Sorting) {
 		viewModelScope.launch {
-			filterPreferences.update { current -> current.copy(sorting = sorting) }
+			homePersonalizationRepository.updatePersisted { current -> current.copy(sorting = sorting) }
 		}
 	}
 

@@ -77,4 +77,37 @@ class WallhavenFiltersTest {
 			).key
 		)
 	}
+
+	@Test
+	fun `sfw can be disabled together with another tier`() {
+		val filters = WallhavenFilters(sfw = false, sketchy = true)
+
+		assertEquals("010", filters.purity)
+		assertEquals(listOf("sketchy"), filters.purityValues)
+	}
+
+	@Test
+	fun `refinements extend the key and the query`() {
+		val filters = WallhavenFilters(
+			color = "ff0000",
+			atleast = "1920x1080",
+			resolutions = listOf("2560x1440"),
+			ratios = listOf("16x9")
+		)
+
+		assertEquals("date_added|111|100|ff0000|1920x1080|2560x1440|16x9", filters.key)
+
+		val query = filters.toQuery()
+		assertEquals("ff0000", query.color)
+		assertEquals("1920x1080", query.atleast)
+		assertEquals("2560x1440", query.resolutions)
+		assertEquals("16x9", query.ratios)
+	}
+
+	@Test
+	fun `default refinements keep the legacy query key`() {
+		assertEquals("date_added|111|100", WallhavenFilters().key)
+		assertEquals(null, WallhavenFilters().toQuery().color)
+		assertEquals(null, WallhavenFilters().toQuery().resolutions)
+	}
 }

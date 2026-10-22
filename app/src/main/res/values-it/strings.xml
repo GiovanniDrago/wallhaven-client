@@ -171,4 +171,9 @@
 	<string name="settings_no_updates">Nessun aggiornamento disponibile</string>
 	<string name="settings_update_error">Impossibile controllare gli aggiornamenti</string>
 	<string name="settings_download_error">Impossibile aprire il download</string>
+
+	<string name="drawer_home_personalization">Personalizzazione home</string>
+	<string name="home_personalization_title">Personalizzazione home</string>
+	<string name="home_personalization_description">Scegli come filtrare e ordinare la galleria della home. Queste impostazioni si applicano ogni volta che apri o aggiorni la home.</string>
+	<string name="home_personalization_reset">Ripristina i valori predefiniti</string>
 </resources>

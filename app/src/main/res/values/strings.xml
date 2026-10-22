@@ -171,4 +171,9 @@
 	<string name="settings_no_updates">No updates available</string>
 	<string name="settings_update_error">Couldn\'t check for updates</string>
 	<string name="settings_download_error">Couldn\'t open the download</string>
+
+	<string name="drawer_home_personalization">Home personalization</string>
+	<string name="home_personalization_title">Home personalization</string>
+	<string name="home_personalization_description">Choose how the home gallery is filtered and sorted. These settings apply every time you open or refresh the home.</string>
+	<string name="home_personalization_reset">Reset to defaults</string>
 </resources>
