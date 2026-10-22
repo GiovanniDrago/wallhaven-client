@@ -103,7 +103,7 @@ the quick filters return to the saved personalization.
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 - [X] T019 [P] Verify string parity between `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` and that no hardcoded user-visible text remains (Principle IV)
-- [ ] T020 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios H1–H5 in `specs/005-home-personalization/quickstart.md`
+- [X] T020 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios H1–H5 in `specs/005-home-personalization/quickstart.md`
 
 ---
 
