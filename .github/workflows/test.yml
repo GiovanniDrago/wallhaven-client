@@ -23,6 +23,35 @@ jobs:
       - name: 'Run unit tests, build the debug APK and the coverage report'
         run: './gradlew test assembleDebug createDebugUnitTestCoverageReport'
 
+      - name: 'Summarize coverage per source file'
+        if: 'always()'
+        run: |
+          python3 - <<'PY'
+          import glob, os, xml.etree.ElementTree as ET
+
+          reports = glob.glob("app/build/reports/coverage/**/report.xml", recursive=True)
+          if not reports:
+              print("no report.xml found, skipping summary")
+              raise SystemExit(0)
+          report = sorted(reports, key=os.path.getsize)[-1]
+          rows = []
+          for pkg in ET.parse(report).getroot().findall("package"):
+              for sf in pkg.findall("sourcefile"):
+                  counters = {
+                      c.get("type"): (int(c.get("covered")), int(c.get("missed")))
+                      for c in sf.findall("counter")
+                  }
+                  line = counters.get("LINE", (0, 0))
+                  branch = counters.get("BRANCH", (0, 0))
+                  rows.append((pkg.get("name"), sf.get("name"), line, branch))
+          out = os.path.join(os.path.dirname(report), "summary.txt")
+          with open(out, "w") as handle:
+              handle.write("package\tsourcefile\tline_covered\tline_total\tbranch_covered\tbranch_total\n")
+              for package, name, line, branch in sorted(rows):
+                  handle.write(f"{package}\t{name}\t{line[0]}\t{sum(line)}\t{branch[0]}\t{sum(branch)}\n")
+          print(f"wrote {out} ({len(rows)} source files)")
+          PY
+
       - name: 'Upload coverage report'
         if: 'always()'
         uses: 'actions/upload-artifact@v4'

@@ -41,9 +41,11 @@ compile, never run Gradle and never invent numbers: every number comes from `rep
    `gh run download` extracts the artifact for you. Do not trigger workflows and do not push
    anything. If a command is denied, repeat it without pipes or extra segments; if `gh` reports an
    auth/network error, say so and stop instead of guessing numbers.
-3. Parse `app/build/reports/coverage/**/report.xml` (JaCoCo XML, counters `LINE`/`BRANCH`/`METHOD`
-   per class/package/sourcefile). Use `reference/sourcefile` `name` attributes to map classes to
-   the source files in the baseline.
+3. Read the compact `summary.txt` that the CI step writes next to `report.xml` (tab-separated:
+   `package, sourcefile, line_covered, line_total, branch_covered, branch_total`). It is the
+   authoritative source for per-file numbers, because `report.xml` is a single very long XML line
+   that the read tool truncates. Use `report.xml` only when the summary is missing, and never
+   re-derive percentages from the HTML pages.
 4. Produce one table per spec (`001`, `002`, `003`, `004`) with: source file, lines covered/total,
    branches covered/total, and the uncovered classes or methods that matter for the spec.
 5. Add a final "Gap" list: acceptance criteria of the spec with no covering test, plus anything
