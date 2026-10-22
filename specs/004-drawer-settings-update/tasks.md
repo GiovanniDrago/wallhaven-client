@@ -95,7 +95,7 @@ offline (error); confirm Download opens the APK asset.
 ## Phase 5: Polish & Cross-Cutting Concerns
 
 - [X] T018 [P] Verify string parity between `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` and that no hardcoded user-visible text remains (Principle IV)
-- [ ] T019 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios D1–D5 in `specs/004-drawer-settings-update/quickstart.md`
+- [X] T019 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios D1–D5 in `specs/004-drawer-settings-update/quickstart.md`
 
 ---
 
