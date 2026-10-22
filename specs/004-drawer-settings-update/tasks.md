@@ -31,9 +31,9 @@ Single Android application module: app code under
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 [P] Add the new English strings to `app/src/main/res/values/strings.xml` (filters expand/collapse content descriptions, check for updates, update available title, later, download, no updates, update check error, download error)
-- [ ] T002 [P] Add the same keys with Italian translations to `app/src/main/res/values-it/strings.xml`
-- [ ] T003 Verify no new Gradle dependencies are needed: keep `app/build.gradle.kts` and `gradle/libs.versions.toml` unchanged (Retrofit, kotlinx.serialization, OkHttp and DataStore are already present)
+- [X] T001 [P] Add the new English strings to `app/src/main/res/values/strings.xml` (filters expand/collapse content descriptions, check for updates, update available title, later, download, no updates, update check error, download error)
+- [X] T002 [P] Add the same keys with Italian translations to `app/src/main/res/values-it/strings.xml`
+- [X] T003 Verify no new Gradle dependencies are needed: keep `app/build.gradle.kts` and `gradle/libs.versions.toml` unchanged (Retrofit, kotlinx.serialization, OkHttp and DataStore are already present)
 
 ---
 
@@ -44,8 +44,8 @@ Single Android application module: app code under
 **Independent Test**: Open the drawer, confirm only "Filters" is visible, tap to reveal the toggles,
 change one, collapse, and confirm the value is applied.
 
-- [ ] T004 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainScreen.kt` hoist a `filtersExpanded` state, reset it to `false` when the drawer closes, and pass it plus `onToggleFilters` to `DrawerContent`
-- [ ] T005 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/DrawerContent.kt` replace the flat filter list with a single clickable "Filters" header (with an expand/collapse indicator) that shows the existing toggles only when expanded; keep the toggles' behaviour unchanged
+- [X] T004 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainScreen.kt` hoist a `filtersExpanded` state, reset it to `false` when the drawer closes, and pass it plus `onToggleFilters` to `DrawerContent`
+- [X] T005 [US1] In `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/DrawerContent.kt` replace the flat filter list with a single clickable "Filters" header (with an expand/collapse indicator) that shows the existing toggles only when expanded; keep the toggles' behaviour unchanged
 
 **Checkpoint**: US1 works independently.
 
@@ -57,7 +57,7 @@ change one, collapse, and confirm the value is applied.
 
 **Independent Test**: Open the drawer (no donation entry); open Settings (donation button works).
 
-- [ ] T006 [US2] Remove the donation item and the `onDonate` parameter from `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/DrawerContent.kt` and `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainScreen.kt`, and delete the unused `drawer_donate` key from `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml`
+- [X] T006 [US2] Remove the donation item and the `onDonate` parameter from `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/DrawerContent.kt` and `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainScreen.kt`, and delete the unused `drawer_donate` key from `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml`
 
 **Checkpoint**: US1 and US2 both work independently.
 
@@ -73,20 +73,20 @@ offline (error); confirm Download opens the APK asset.
 
 ### Tests for User Story 3
 
-- [ ] T007 [P] [US3] Write `app/src/test/java/dev/giovannidrago/wallhaven/VersionComparisonTest.kt`: tag extraction (`personal-WallhavenClient-0.5.0-16` → `0.5.0`), leading `v`, build metadata, missing components, `1.10.0 > 1.9.9`, and non-numeric tags
-- [ ] T008 [P] [US3] Write `app/src/test/java/dev/giovannidrago/wallhaven/UpdateRepositoryTest.kt` with OkHttp MockWebServer: newer/older version, asset selection (prefers `WallhavenClient-latest.apk`), release-page fallback when no APK, non-200 error, and the once-per-day throttle (MockK for preferences)
+- [X] T007 [P] [US3] Write `app/src/test/java/dev/giovannidrago/wallhaven/VersionComparisonTest.kt`: tag extraction (`personal-WallhavenClient-0.5.0-16` → `0.5.0`), leading `v`, build metadata, missing components, `1.10.0 > 1.9.9`, and non-numeric tags
+- [X] T008 [P] [US3] Write `app/src/test/java/dev/giovannidrago/wallhaven/UpdateRepositoryTest.kt` with OkHttp MockWebServer: newer/older version, asset selection (prefers `WallhavenClient-latest.apk`), release-page fallback when no APK, non-200 error, and the once-per-day throttle (MockK for preferences)
 
 ### Implementation for User Story 3
 
-- [ ] T009 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/domain/VersionComparison.kt` with pure `extractVersionFromTag(tag)` (first `\d+(\.\d+){0,2}` group) and `isNewerVersion(latest, current)` (strip leading `v`, drop `+metadata`, numeric major/minor/patch, missing = 0)
-- [ ] T010 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/api/dto/GithubReleaseDto.kt` with `@Serializable` fields `tag_name`, `html_url` and `assets[]` (`name`, `browser_download_url`)
-- [ ] T011 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/api/GithubApi.kt` with `GET repos/GiovanniDrago/wallhaven-client/releases/latest` and `Accept`/`User-Agent` headers (no auth)
-- [ ] T012 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/prefs/UpdatePreferences.kt` storing `last_update_check` as `yyyy-MM-dd` in the existing DataStore
-- [ ] T013 [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/repository/UpdateRepository.kt`: `check(currentVersion)` returning `UpToDate`/`UpdateAvailable(version, downloadUrl)`/`Error`, with APK asset selection (`WallhavenClient-latest.apk` → first `.apk` → `html_url`) and silent-check throttling helpers (depends on T009–T012)
-- [ ] T014 [US3] Update `app/src/main/java/dev/giovannidrago/wallhaven/di/NetworkModule.kt` (provide `GithubApi` for `https://api.github.com/` with `User-Agent`) and `app/src/main/java/dev/giovannidrago/wallhaven/di/AppModule.kt` (provide `currentVersion` from `BuildConfig.VERSION_NAME`)
-- [ ] T015 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/UpdateAvailableDialog.kt` with the new version and "Later"/"Download" actions
-- [ ] T016 [US3] Update `app/src/main/java/dev/giovannidrago/wallhaven/ui/settings/SettingsViewModel.kt` (manual check state/events) and `app/src/main/java/dev/giovannidrago/wallhaven/ui/settings/SettingsScreen.kt` (installed version, "Check for updates", dialog, up-to-date/error snackbars)
-- [ ] T017 [US3] Update `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainViewModel.kt` (once-per-day silent check + one-shot update event) and `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainScreen.kt` (show `UpdateAvailableDialog` for the silent result)
+- [X] T009 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/domain/VersionComparison.kt` with pure `extractVersionFromTag(tag)` (first `\d+(\.\d+){0,2}` group) and `isNewerVersion(latest, current)` (strip leading `v`, drop `+metadata`, numeric major/minor/patch, missing = 0)
+- [X] T010 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/api/dto/GithubReleaseDto.kt` with `@Serializable` fields `tag_name`, `html_url` and `assets[]` (`name`, `browser_download_url`)
+- [X] T011 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/api/GithubApi.kt` with `GET repos/GiovanniDrago/wallhaven-client/releases/latest` and `Accept`/`User-Agent` headers (no auth)
+- [X] T012 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/prefs/UpdatePreferences.kt` storing `last_update_check` as `yyyy-MM-dd` in the existing DataStore
+- [X] T013 [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/data/repository/UpdateRepository.kt`: `check(currentVersion)` returning `UpToDate`/`UpdateAvailable(version, downloadUrl)`/`Error`, with APK asset selection (`WallhavenClient-latest.apk` → first `.apk` → `html_url`) and silent-check throttling helpers (depends on T009–T012)
+- [X] T014 [US3] Update `app/src/main/java/dev/giovannidrago/wallhaven/di/NetworkModule.kt` (provide `GithubApi` for `https://api.github.com/` with `User-Agent`) and `app/src/main/java/dev/giovannidrago/wallhaven/di/AppModule.kt` (provide `currentVersion` from `BuildConfig.VERSION_NAME`)
+- [X] T015 [P] [US3] Create `app/src/main/java/dev/giovannidrago/wallhaven/ui/components/UpdateAvailableDialog.kt` with the new version and "Later"/"Download" actions
+- [X] T016 [US3] Update `app/src/main/java/dev/giovannidrago/wallhaven/ui/settings/SettingsViewModel.kt` (manual check state/events) and `app/src/main/java/dev/giovannidrago/wallhaven/ui/settings/SettingsScreen.kt` (installed version, "Check for updates", dialog, up-to-date/error snackbars)
+- [X] T017 [US3] Update `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainViewModel.kt` (once-per-day silent check + one-shot update event) and `app/src/main/java/dev/giovannidrago/wallhaven/ui/MainScreen.kt` (show `UpdateAvailableDialog` for the silent result)
 
 **Checkpoint**: All three user stories are independently functional.
 
@@ -94,7 +94,7 @@ offline (error); confirm Download opens the APK asset.
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [ ] T018 [P] Verify string parity between `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` and that no hardcoded user-visible text remains (Principle IV)
+- [X] T018 [P] Verify string parity between `app/src/main/res/values/strings.xml` and `app/src/main/res/values-it/strings.xml` and that no hardcoded user-visible text remains (Principle IV)
 - [ ] T019 Run the quality gate `./gradlew test assembleDebug` (CI `Test` workflow) and execute the manual scenarios D1–D5 in `specs/004-drawer-settings-update/quickstart.md`
 
 ---

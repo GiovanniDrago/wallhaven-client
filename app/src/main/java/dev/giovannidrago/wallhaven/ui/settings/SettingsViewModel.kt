@@ -10,9 +10,12 @@ import dev.giovannidrago.wallhaven.data.prefs.AccountPreferences
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
 import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
 import dev.giovannidrago.wallhaven.data.repository.SearchDiagnostics
+import dev.giovannidrago.wallhaven.data.repository.UpdateCheckResult
+import dev.giovannidrago.wallhaven.data.repository.UpdateRepository
 import dev.giovannidrago.wallhaven.data.repository.WallpaperRepository
 import dev.giovannidrago.wallhaven.domain.Sorting
 import dev.giovannidrago.wallhaven.domain.WallhavenFilters
+import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,6 +32,7 @@ class SettingsViewModel @Inject constructor(
 	private val apiKeyStore: ApiKeyStore,
 	private val filterPreferences: FilterPreferences,
 	private val accountPreferences: AccountPreferences,
+	private val updateRepository: UpdateRepository,
 	diagnostics: SearchDiagnostics
 ) : ViewModel() {
 	val apiKeyPresent: StateFlow<Boolean> = apiKeyStore.apiKey
@@ -46,6 +50,11 @@ class SettingsViewModel @Inject constructor(
 
 	val lastRequest: StateFlow<String?> = diagnostics.lastRequest
 	val lastResponse: StateFlow<String?> = diagnostics.lastResponse
+
+	val installedVersion: String = updateRepository.installedVersion
+
+	private val _update = MutableStateFlow<UpdateUiState>(UpdateUiState.Idle)
+	val update: StateFlow<UpdateUiState> = _update.asStateFlow()
 
 	private val _apiKeyInvalid = MutableStateFlow(false)
 	val apiKeyInvalid: StateFlow<Boolean> = _apiKeyInvalid.asStateFlow()
@@ -115,6 +124,31 @@ class SettingsViewModel @Inject constructor(
 		}
 	}
 
+	fun checkForUpdates() {
+		if (_update.value is UpdateUiState.Checking) {
+			return
+		}
+		_update.value = UpdateUiState.Checking
+		viewModelScope.launch {
+			val today = LocalDate.now().toString()
+			when (val result = updateRepository.check()) {
+				is UpdateCheckResult.UpdateAvailable -> {
+					_update.value = UpdateUiState.Available(result.version, result.downloadUrl)
+					updateRepository.markChecked(today)
+				}
+				UpdateCheckResult.UpToDate -> {
+					_update.value = UpdateUiState.NoUpdate
+					updateRepository.markChecked(today)
+				}
+				UpdateCheckResult.Error -> _update.value = UpdateUiState.CheckError
+			}
+		}
+	}
+
+	fun consumeUpdate() {
+		_update.value = UpdateUiState.Idle
+	}
+
 	fun consumeMessage() {
 		_message.value = null
 	}
@@ -132,4 +166,16 @@ enum class SettingsMessage(@StringRes val textRes: Int) {
 	INVALID(R.string.settings_api_key_invalid),
 	SAVE_ERROR(R.string.settings_api_key_save_error),
 	REMOVED(R.string.settings_api_key_removed)
+}
+
+sealed interface UpdateUiState {
+	data object Idle : UpdateUiState
+
+	data object Checking : UpdateUiState
+
+	data object NoUpdate : UpdateUiState
+
+	data class Available(val version: String, val downloadUrl: String) : UpdateUiState
+
+	data object CheckError : UpdateUiState
 }

@@ -50,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.giovannidrago.wallhaven.BuildConfig
 import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.domain.Sorting
+import dev.giovannidrago.wallhaven.ui.components.UpdateAvailableDialog
 import dev.giovannidrago.wallhaven.ui.components.openUrl
 import dev.giovannidrago.wallhaven.ui.search.purityLabelRes
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -70,17 +71,37 @@ fun SettingsScreen(
 	val apiKeyInvalid by viewModel.apiKeyInvalid.collectAsStateWithLifecycle()
 	val lastRequest by viewModel.lastRequest.collectAsStateWithLifecycle()
 	val lastResponse by viewModel.lastResponse.collectAsStateWithLifecycle()
+	val installedVersion = viewModel.installedVersion
+	val update by viewModel.update.collectAsStateWithLifecycle()
 	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val context = LocalContext.current
 	val errorOpenLink = stringResource(R.string.error_open_link)
 	var apiKeyInput by rememberSaveable { mutableStateOf("") }
 
+	val noUpdatesText = stringResource(R.string.settings_no_updates)
+	val updateErrorText = stringResource(R.string.settings_update_error)
+	val downloadErrorText = stringResource(R.string.settings_download_error)
+
 	val messageText = message?.let { stringResource(it.textRes) }
 	LaunchedEffect(message, messageText) {
 		if (messageText != null) {
 			snackbarHostState.showSnackbar(messageText)
 			viewModel.consumeMessage()
+		}
+	}
+
+	LaunchedEffect(update) {
+		when (update) {
+			UpdateUiState.NoUpdate -> {
+				snackbarHostState.showSnackbar(noUpdatesText)
+				viewModel.consumeUpdate()
+			}
+			UpdateUiState.CheckError -> {
+				snackbarHostState.showSnackbar(updateErrorText)
+				viewModel.consumeUpdate()
+			}
+			else -> Unit
 		}
 	}
 
@@ -279,9 +300,22 @@ fun SettingsScreen(
 					verticalArrangement = Arrangement.spacedBy(8.dp)
 				) {
 					Text(
-						text = stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
+						text = stringResource(R.string.settings_version, installedVersion),
 						style = MaterialTheme.typography.bodyMedium
 					)
+					FilledTonalButton(
+						onClick = viewModel::checkForUpdates,
+						enabled = update !is UpdateUiState.Checking
+					) {
+						if (update is UpdateUiState.Checking) {
+							CircularProgressIndicator(
+								modifier = Modifier.size(18.dp),
+								strokeWidth = 2.dp
+							)
+							Spacer(modifier = Modifier.width(8.dp))
+						}
+						Text(stringResource(R.string.settings_check_updates))
+					}
 					Text(
 						text = stringResource(R.string.settings_privacy_note),
 						style = MaterialTheme.typography.bodySmall,
@@ -304,6 +338,20 @@ fun SettingsScreen(
 				}
 			}
 		}
+	}
+
+	val available = update
+	if (available is UpdateUiState.Available) {
+		UpdateAvailableDialog(
+			version = available.version,
+			onDismiss = viewModel::consumeUpdate,
+			onDownload = {
+				if (!openUrl(context, available.downloadUrl)) {
+					scope.launch { snackbarHostState.showSnackbar(downloadErrorText) }
+				}
+				viewModel.consumeUpdate()
+			}
+		)
 	}
 }
 
