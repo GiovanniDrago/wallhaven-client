@@ -2,6 +2,7 @@ name: 'Test'
 on:
   push:
   pull_request:
+  workflow_dispatch:
 permissions:
   contents: 'read'
 jobs:
@@ -19,8 +20,19 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: 'Run unit tests and build the debug APK'
-        run: './gradlew test assembleDebug'
+      - name: 'Run unit tests, build the debug APK and the coverage report'
+        run: './gradlew test assembleDebug createDebugUnitTestCoverageReport'
+
+      - name: 'Upload coverage report'
+        if: 'always()'
+        uses: 'actions/upload-artifact@v4'
+        with:
+          name: 'wallhaven-client-coverage-${{ github.run_number }}'
+          path: |
+            app/build/reports/coverage/
+            app/build/outputs/unit_test_code_coverage/
+          if-no-files-found: 'warn'
+          retention-days: 30
 
       - name: 'Upload debug APK'
         uses: 'actions/upload-artifact@v4'
