@@ -176,4 +176,17 @@
 	<string name="home_personalization_title">Personalizzazione home</string>
 	<string name="home_personalization_description">Scegli come filtrare e ordinare la galleria della home. Queste impostazioni si applicano ogni volta che apri o aggiorni la home.</string>
 	<string name="home_personalization_reset">Ripristina i valori predefiniti</string>
+
+	<string name="settings_appearance_title">Aspetto</string>
+	<string name="settings_appearance_mode">Modalità tema</string>
+	<string name="settings_appearance_system">Segui sistema</string>
+	<string name="settings_appearance_light">Chiaro</string>
+	<string name="settings_appearance_dark">Scuro</string>
+	<string name="settings_appearance_light_theme">Tema chiaro</string>
+	<string name="settings_appearance_dark_theme">Tema scuro</string>
+	<string name="settings_appearance_description">Scegli i colori dell\'app. I temi chiaro e scuro vengono usati in base alla modalità selezionata.</string>
+	<string name="theme_default_light">Chiaro predefinito</string>
+	<string name="theme_latte">Latte</string>
+	<string name="theme_default_dark">Scuro predefinito</string>
+	<string name="theme_mocha">Mocha</string>
 </resources>

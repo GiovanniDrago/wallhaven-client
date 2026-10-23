@@ -176,4 +176,17 @@
 	<string name="home_personalization_title">Home personalization</string>
 	<string name="home_personalization_description">Choose how the home gallery is filtered and sorted. These settings apply every time you open or refresh the home.</string>
 	<string name="home_personalization_reset">Reset to defaults</string>
+
+	<string name="settings_appearance_title">Appearance</string>
+	<string name="settings_appearance_mode">Theme mode</string>
+	<string name="settings_appearance_system">Follow system</string>
+	<string name="settings_appearance_light">Light</string>
+	<string name="settings_appearance_dark">Dark</string>
+	<string name="settings_appearance_light_theme">Light theme</string>
+	<string name="settings_appearance_dark_theme">Dark theme</string>
+	<string name="settings_appearance_description">Choose the app colors. The light and dark themes are used according to the selected mode.</string>
+	<string name="theme_default_light">Default light</string>
+	<string name="theme_latte">Latte</string>
+	<string name="theme_default_dark">Default dark</string>
+	<string name="theme_mocha">Mocha</string>
 </resources>

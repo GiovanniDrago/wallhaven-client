@@ -71,14 +71,16 @@ Misurata sui test unitari JVM (`app/src/test/java/dev/giovannidrago/wallhaven/`)
 | 002 — zoom/pan | `ui/components/ZoomPan.kt` (`fitContentSize`, `clampScale`, `maxTranslation`, `clampOffset`, `ZoomPanState`, `transform`) | `ZoomPanTest` |
 | 004 — filtri drawer | `domain/WallhavenFilters.kt`, `domain/WallhavenQuery.kt`, `domain/SearchOptions.kt` | `WallhavenFiltersTest`, `WallhavenQueryTest`, `SearchOptionsTest` |
 | 004 — update check | `data/repository/UpdateRepository.kt`, `domain/VersionComparison.kt` | `UpdateRepositoryTest`, `VersionComparisonTest` |
+| 006 — preset tema | `domain/ThemeSettings.kt`, `ui/theme/ThemePresets.kt` | `ThemeSettingsTest`, `ThemePresetTest` |
 
 Fuori scope dichiarato (non misurato o non misurabile con test JVM):
 
 - Compose UI: `ui/components/DrawerContent.kt`, `ui/components/UpdateAvailableDialog.kt`,
   `ui/components/ZoomableImage.kt`, `ui/settings/SettingsScreen.kt`, `ui/MainScreen.kt`;
 - DAO/Room e database reale (`data/db/*`), Hilt/DI (`di/*`), `MainActivity`;
-- wrapper DataStore (`data/prefs/FilterPreferences.kt`, `UpdatePreferences.kt`): esercitati solo
-  tramite mock nei repository test, non misurati direttamente.
+- wrapper DataStore (`data/prefs/FilterPreferences.kt`, `UpdatePreferences.kt`,
+  `ThemePreferences.kt`): esercitati solo tramite mock nei repository test, non misurati
+  direttamente.
 
 ## Convenzioni di lavoro
 
