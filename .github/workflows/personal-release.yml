@@ -32,12 +32,15 @@ jobs:
         id: package
         run: |
           VERSION=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
-          NAME="WallhavenClient-${VERSION}-${GITHUB_RUN_NUMBER}"
+          VERSION_CODE=$(grep -oP 'versionCode = \K\d+' app/build.gradle.kts)
+          NAME="WallhavenClient-${VERSION}-${VERSION_CODE}"
           mv app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/${NAME}.apk"
           sha256sum "app/build/outputs/apk/release/${NAME}.apk" | tee "app/build/outputs/apk/release/${NAME}.apk.sha256"
           cp "app/build/outputs/apk/release/${NAME}.apk" "app/build/outputs/apk/release/WallhavenClient-latest.apk"
           sha256sum "app/build/outputs/apk/release/WallhavenClient-latest.apk" | tee "app/build/outputs/apk/release/WallhavenClient-latest.apk.sha256"
           echo "NAME=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "VERSION_CODE=${VERSION_CODE}" >> "$GITHUB_OUTPUT"
 
       - name: 'Upload artifact'
         uses: 'actions/upload-artifact@v4'

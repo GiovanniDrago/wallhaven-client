@@ -31,24 +31,31 @@ android {
 		applicationId = "dev.giovannidrago.wallhaven"
 		minSdk = 26
 		targetSdk = 37
-		versionCode = 5
+		versionCode = 20
 		versionName = "0.5.0"
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 		buildConfigField("String", "DONATION_URL", "\"$donationUrl\"")
 	}
 
 	signingConfigs {
-		create("release") {
-			storeFile = file("../release.keystore")
-			storePassword = keystorePassword
-			keyAlias = "wallhavend"
-			keyPassword = keystorePassword
+		// F-Droid builds with -Pfdroid: the release keystore is not available there.
+		if (!project.hasProperty("fdroid")) {
+			create("release") {
+				storeFile = file("../release.keystore")
+				storePassword = keystorePassword
+				keyAlias = "wallhavend"
+				keyPassword = keystorePassword
+			}
 		}
 	}
 
 	buildTypes {
 		release {
-			signingConfig = signingConfigs.getByName("release")
+			signingConfig = if (project.hasProperty("fdroid")) {
+				null
+			} else {
+				signingConfigs.getByName("release")
+			}
 			isMinifyEnabled = true
 			isShrinkResources = true
 			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -63,6 +70,12 @@ android {
 	buildFeatures {
 		compose = true
 		buildConfig = true
+	}
+
+	// Keep the dependency metadata out of the APK so the F-Droid build is reproducible.
+	dependenciesInfo {
+		includeInApk = false
+		includeInBundle = false
 	}
 
 	testOptions {
