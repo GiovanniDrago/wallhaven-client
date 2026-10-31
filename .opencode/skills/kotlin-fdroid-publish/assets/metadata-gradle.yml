@@ -1,0 +1,30 @@
+Categories:
+  - __CATEGORY__
+
+License: __LICENSE__
+AuthorName: __AUTHOR_NAME__
+SourceCode: __SOURCE_CODE__
+IssueTracker: __ISSUE_TRACKER__
+Changelog: __CHANGELOG__
+
+RepoType: git
+Repo: __REPO_URL__
+
+Builds:
+  - versionName: __VERSION_NAME__
+    versionCode: __VERSION_CODE__
+    commit: __COMMIT__
+    subdir: __SUBDIR__
+    gradle:
+      - yes
+    gradleprops:
+      - __SIGNING_PROPERTY__
+    binary: __BINARY_URL__
+
+AllowedAPKSigningKeys: "__SIGNING_KEY_SHA256__"
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags __TAG_PATTERN__
+UpdateCheckData: __BUILD_FILE__|versionCode\s*=\s*(\d+)|.|versionName\s*=\s*"([^"]+)"
+CurrentVersion: __VERSION_NAME__
+CurrentVersionCode: __VERSION_CODE__

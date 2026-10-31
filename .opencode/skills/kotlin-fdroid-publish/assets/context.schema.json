@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kotlin/Android F-Droid publication context",
+  "description": "Input contract for kotlin-fdroid-publish. Contains no secrets.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "mode",
+    "app",
+    "upstream",
+    "release",
+    "android",
+    "fork",
+    "category",
+    "approvals",
+    "mr",
+    "paths"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "mode": {
+      "enum": ["new", "update"]
+    },
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packageId",
+        "name",
+        "license",
+        "authorName",
+        "sourceCode",
+        "issueTracker"
+      ],
+      "properties": {
+        "packageId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authorName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceCode": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "issueTracker": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "changelog": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "website": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "rfpIssue": {
+          "type": "string"
+        }
+      }
+    },
+    "upstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repoUrl",
+        "branch",
+        "defaultBranch",
+        "workDir",
+        "tagPattern",
+        "workflowFile",
+        "module",
+        "buildFile",
+        "subdir"
+      ],
+      "properties": {
+        "repoUrl": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "defaultBranch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workDir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tagPattern": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workflowFile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "buildFile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subdir": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["versionName", "versionCode", "tag", "assetName"],
+      "properties": {
+        "versionName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "versionCode": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "previousVersionCode": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assetName": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "android": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "buildSystem",
+        "signingProperty",
+        "reproducible",
+        "tagTemplate",
+        "assetTemplate",
+        "changelog"
+      ],
+      "properties": {
+        "buildSystem": {
+          "const": "gradle"
+        },
+        "signingProperty": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reproducible": {
+          "type": "boolean"
+        },
+        "tagTemplate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assetTemplate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "changelog": {
+          "enum": ["default", "per-version"]
+        }
+      }
+    },
+    "fork": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host",
+        "namespace",
+        "projectPath",
+        "url",
+        "protocol",
+        "visibility"
+      ],
+      "properties": {
+        "host": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "namespace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "projectPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "protocol": {
+          "enum": ["ssh", "https"]
+        },
+        "visibility": {
+          "enum": ["public", "internal", "private"]
+        }
+      }
+    },
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "alternatives", "sourceSha256"],
+      "properties": {
+        "primary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sourceSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upstreamChanges",
+        "upstreamPush",
+        "autoPush",
+        "draftMr",
+        "neverReadyWithoutUser"
+      ],
+      "properties": {
+        "upstreamChanges": {
+          "type": "boolean"
+        },
+        "upstreamPush": {
+          "type": "boolean"
+        },
+        "autoPush": {
+          "type": "boolean"
+        },
+        "draftMr": {
+          "type": "boolean"
+        },
+        "neverReadyWithoutUser": {
+          "const": true
+        }
+      }
+    },
+    "mr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["language", "title", "bodyFile"],
+      "properties": {
+        "language": {
+          "const": "en"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bodyFile": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workRoot", "upstreamDir", "fdroiddataDir", "handoffDir"],
+      "properties": {
+        "workRoot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "upstreamDir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fdroiddataDir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "handoffDir": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

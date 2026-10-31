@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "mode": "new",
+  "app": {
+    "packageId": "dev.giovannidrago.wallhaven",
+    "name": "Wallhaven Client",
+    "license": "GPL-3.0-only",
+    "authorName": "Giovanni Drago",
+    "sourceCode": "https://github.com/GiovanniDrago/wallhaven-client",
+    "issueTracker": "https://github.com/GiovanniDrago/wallhaven-client/issues",
+    "changelog": "https://github.com/GiovanniDrago/wallhaven-client/releases",
+    "rfpIssue": "rfp#1234"
+  },
+  "upstream": {
+    "repoUrl": "https://github.com/GiovanniDrago/wallhaven-client",
+    "branch": "main",
+    "defaultBranch": "main",
+    "workDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/upstream",
+    "tagPattern": "personal-WallhavenClient-.*",
+    "workflowFile": "personal-release.yml",
+    "module": "app",
+    "buildFile": "app/build.gradle.kts",
+    "subdir": "app"
+  },
+  "release": {
+    "versionName": "0.5.0",
+    "versionCode": 6,
+    "previousVersionCode": 5,
+    "tag": "personal-WallhavenClient-0.5.0-6",
+    "assetName": "WallhavenClient-0.5.0-6.apk"
+  },
+  "android": {
+    "buildSystem": "gradle",
+    "signingProperty": "fdroid",
+    "reproducible": true,
+    "tagTemplate": "personal-WallhavenClient-{version}-{versionCode}",
+    "assetTemplate": "WallhavenClient-{version}-{versionCode}.apk",
+    "changelog": "default"
+  },
+  "fork": {
+    "host": "https://gitlab.com",
+    "namespace": "example-user",
+    "projectPath": "example-user/fdroiddata",
+    "url": "https://gitlab.com/example-user/fdroiddata",
+    "protocol": "ssh",
+    "visibility": "public"
+  },
+  "category": {
+    "primary": "Wallpaper",
+    "alternatives": ["Gallery", "Theming"],
+    "sourceSha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
+  "approvals": {
+    "upstreamChanges": true,
+    "upstreamPush": true,
+    "autoPush": true,
+    "draftMr": true,
+    "neverReadyWithoutUser": true
+  },
+  "mr": {
+    "language": "en",
+    "title": "New app: Wallhaven Client",
+    "bodyFile": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/handoff/mr.md"
+  },
+  "paths": {
+    "workRoot": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven",
+    "upstreamDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/upstream",
+    "fdroiddataDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/fdroiddata",
+    "handoffDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/handoff"
+  }
+}

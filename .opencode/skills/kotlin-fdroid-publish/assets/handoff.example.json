@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "appId": "dev.giovannidrago.wallhaven",
+  "branch": "fdroid/0.5.0",
+  "release": {
+    "versionName": "0.5.0",
+    "versionCode": 6,
+    "previousVersionCode": 5,
+    "tag": "personal-WallhavenClient-0.5.0-6",
+    "commit": "0123456789abcdef0123456789abcdef01234567",
+    "workflowFile": "personal-release.yml",
+    "buildPath": "/home/vagrant/build/dev.giovannidrago.wallhaven",
+    "agpVersion": "9.4.1",
+    "gradleVersion": "9.7.1",
+    "jdkVersion": "17",
+    "compileSdk": 37,
+    "apk": {
+      "name": "WallhavenClient-0.5.0-6.apk",
+      "url": "https://github.com/GiovanniDrago/wallhaven-client/releases/download/personal-WallhavenClient-0.5.0-6/WallhavenClient-0.5.0-6.apk",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "signingKeySha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "reproducible": true
+  },
+  "checks": [
+    {
+      "name": "version-code-increased",
+      "ok": true,
+      "detail": "6 > 5"
+    },
+    {
+      "name": "f-droid-build-unsigned",
+      "ok": true,
+      "detail": "./gradlew assembleRelease -Pfdroid"
+    },
+    {
+      "name": "release-tag",
+      "ok": true,
+      "detail": "personal-WallhavenClient-0.5.0-6 -> 0123456789abcdef0123456789abcdef01234567"
+    }
+  ],
+  "warnings": []
+}
