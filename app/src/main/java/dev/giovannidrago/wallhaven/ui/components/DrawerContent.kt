@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,8 +42,9 @@ fun DrawerContent(
 	filters: WallhavenFilters,
 	apiKeyPresent: Boolean,
 	selectedSection: AppSection,
+	filtersExpanded: Boolean,
 	onNavigate: (AppSection) -> Unit,
-	onDonate: () -> Unit,
+	onToggleFilters: () -> Unit,
 	onNsfwChange: (Boolean) -> Unit,
 	onSketchyChange: (Boolean) -> Unit,
 	onCategoryChange: (CategoryFilter, Boolean) -> Unit
@@ -81,58 +84,69 @@ fun DrawerContent(
 		}
 
 		HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-		NavigationDrawerItem(
-			label = { Text(stringResource(R.string.drawer_donate)) },
-			selected = false,
-			onClick = onDonate,
-			icon = { Icon(Icons.Outlined.LocalCafe, contentDescription = null) },
-			modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-		)
+		Row(
+			modifier = Modifier
+				.fillMaxWidth()
+				.clickable(onClick = onToggleFilters)
+				.padding(horizontal = 28.dp, vertical = 12.dp),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Text(
+				text = stringResource(R.string.drawer_filters),
+				style = MaterialTheme.typography.labelLarge,
+				color = MaterialTheme.colorScheme.onSurfaceVariant,
+				modifier = Modifier.weight(1f)
+			)
+			Icon(
+				imageVector = if (filtersExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+				contentDescription = stringResource(
+					if (filtersExpanded) {
+						R.string.cd_collapse_filters
+					} else {
+						R.string.cd_expand_filters
+					}
+				)
+			)
+		}
 
-		HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-		Text(
-			text = stringResource(R.string.drawer_filters),
-			style = MaterialTheme.typography.labelLarge,
-			color = MaterialTheme.colorScheme.onSurfaceVariant,
-			modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp)
-		)
-
-		FilterToggle(
-			label = stringResource(R.string.drawer_nsfw),
-			subtitle = if (apiKeyPresent) {
-				null
-			} else {
-				stringResource(R.string.drawer_nsfw_requires_key)
-			},
-			checked = filters.nsfw,
-			enabled = apiKeyPresent,
-			onCheckedChange = onNsfwChange,
-			onClick = if (apiKeyPresent) {
-				null
-			} else {
-				{ onNavigate(AppSection.SETTINGS) }
-			}
-		)
-		FilterToggle(
-			label = stringResource(R.string.drawer_sketchy),
-			checked = filters.sketchy,
-			onCheckedChange = onSketchyChange
-		)
-		FilterToggle(
-			label = stringResource(R.string.drawer_category_people),
-			checked = filters.people,
-			onCheckedChange = { onCategoryChange(CategoryFilter.PEOPLE, it) }
-		)
-		FilterToggle(
-			label = stringResource(R.string.drawer_category_anime),
-			checked = filters.anime,
-			onCheckedChange = { onCategoryChange(CategoryFilter.ANIME, it) }
-		)
-		FilterToggle(
-			label = stringResource(R.string.drawer_category_general),
-			checked = filters.general,
-			onCheckedChange = { onCategoryChange(CategoryFilter.GENERAL, it) }
-		)
+		if (filtersExpanded) {
+			FilterToggle(
+				label = stringResource(R.string.drawer_nsfw),
+				subtitle = if (apiKeyPresent) {
+					null
+				} else {
+					stringResource(R.string.drawer_nsfw_requires_key)
+				},
+				checked = filters.nsfw,
+				enabled = apiKeyPresent,
+				onCheckedChange = onNsfwChange,
+				onClick = if (apiKeyPresent) {
+					null
+				} else {
+					{ onNavigate(AppSection.SETTINGS) }
+				}
+			)
+			FilterToggle(
+				label = stringResource(R.string.drawer_sketchy),
+				checked = filters.sketchy,
+				onCheckedChange = onSketchyChange
+			)
+			FilterToggle(
+				label = stringResource(R.string.drawer_category_people),
+				checked = filters.people,
+				onCheckedChange = { onCategoryChange(CategoryFilter.PEOPLE, it) }
+			)
+			FilterToggle(
+				label = stringResource(R.string.drawer_category_anime),
+				checked = filters.anime,
+				onCheckedChange = { onCategoryChange(CategoryFilter.ANIME, it) }
+			)
+			FilterToggle(
+				label = stringResource(R.string.drawer_category_general),
+				checked = filters.general,
+				onCheckedChange = { onCategoryChange(CategoryFilter.GENERAL, it) }
+			)
+		}
 
 		Spacer(modifier = Modifier.height(16.dp))
 	}
@@ -187,6 +201,7 @@ private fun AppSection.labelRes(): Int = when (this) {
 	AppSection.SEARCH -> R.string.drawer_search
 	AppSection.FAVORITES -> R.string.drawer_favorites
 	AppSection.ALBUMS -> R.string.drawer_albums
+	AppSection.HOME_PERSONALIZATION -> R.string.drawer_home_personalization
 	AppSection.SETTINGS -> R.string.drawer_settings
 }
 
@@ -195,5 +210,6 @@ private fun AppSection.icon(): ImageVector = when (this) {
 	AppSection.SEARCH -> Icons.Outlined.Search
 	AppSection.FAVORITES -> Icons.Outlined.FavoriteBorder
 	AppSection.ALBUMS -> Icons.Outlined.CollectionsBookmark
+	AppSection.HOME_PERSONALIZATION -> Icons.Outlined.Tune
 	AppSection.SETTINGS -> Icons.Outlined.Settings
 }

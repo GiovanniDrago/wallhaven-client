@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.giovannidrago.wallhaven.BuildConfig
+import dev.giovannidrago.wallhaven.data.api.GithubApi
 import dev.giovannidrago.wallhaven.data.api.WallhavenApi
 import dev.giovannidrago.wallhaven.util.AppLogger
 import java.util.concurrent.TimeUnit
@@ -59,6 +60,15 @@ object NetworkModule {
 	@Provides
 	@Singleton
 	fun provideWallhavenApi(retrofit: Retrofit): WallhavenApi = retrofit.create(WallhavenApi::class.java)
+
+	@Provides
+	@Singleton
+	fun provideGithubApi(okHttpClient: OkHttpClient, json: Json): GithubApi = Retrofit.Builder()
+		.baseUrl("https://api.github.com/")
+		.client(okHttpClient)
+		.addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+		.build()
+		.create(GithubApi::class.java)
 }
 
 private const val LOG_TAG = "OkHttp"

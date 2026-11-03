@@ -1,3 +1,4 @@
+import com.android.build.api.variant.HostTestBuilder
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -74,6 +75,15 @@ android {
 				}
 			}
 		}
+	}
+}
+
+// Unit-test coverage for the debug variant (AGP 9 per-variant host test DSL).
+// AGP applies JaCoCo itself and registers `createDebugUnitTestCoverageReport`,
+// which writes HTML plus `report.xml` under build/reports/coverage/.
+androidComponents {
+	beforeVariants(selector().withBuildType("debug")) { variantBuilder ->
+		variantBuilder.hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.enableCodeCoverage = true
 	}
 }
 

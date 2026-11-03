@@ -8,11 +8,17 @@ import dev.giovannidrago.wallhaven.R
 import dev.giovannidrago.wallhaven.data.api.dto.UserSettingsDto
 import dev.giovannidrago.wallhaven.data.prefs.AccountPreferences
 import dev.giovannidrago.wallhaven.data.prefs.ApiKeyStore
-import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
+import dev.giovannidrago.wallhaven.data.prefs.ThemePreferences
+import dev.giovannidrago.wallhaven.data.repository.HomePersonalizationRepository
 import dev.giovannidrago.wallhaven.data.repository.SearchDiagnostics
+import dev.giovannidrago.wallhaven.data.repository.UpdateCheckResult
+import dev.giovannidrago.wallhaven.data.repository.UpdateRepository
 import dev.giovannidrago.wallhaven.data.repository.WallpaperRepository
+import dev.giovannidrago.wallhaven.domain.AppearanceMode
 import dev.giovannidrago.wallhaven.domain.Sorting
+import dev.giovannidrago.wallhaven.domain.ThemeSettings
 import dev.giovannidrago.wallhaven.domain.WallhavenFilters
+import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,16 +33,20 @@ import retrofit2.HttpException
 class SettingsViewModel @Inject constructor(
 	private val repository: WallpaperRepository,
 	private val apiKeyStore: ApiKeyStore,
-	private val filterPreferences: FilterPreferences,
+	private val homePersonalizationRepository: HomePersonalizationRepository,
 	private val accountPreferences: AccountPreferences,
+	private val updateRepository: UpdateRepository,
+	private val themePreferences: ThemePreferences,
 	diagnostics: SearchDiagnostics
 ) : ViewModel() {
 	val apiKeyPresent: StateFlow<Boolean> = apiKeyStore.apiKey
 		.map { it.isNotBlank() }
 		.stateIn(viewModelScope, SharingStarted.Eagerly, apiKeyStore.apiKey.value.isNotBlank())
 
-	val filters: StateFlow<WallhavenFilters> = filterPreferences.filters
-		.stateIn(viewModelScope, SharingStarted.Eagerly, WallhavenFilters())
+	val filters: StateFlow<WallhavenFilters> = homePersonalizationRepository.persisted
+
+	val themeSettings: StateFlow<ThemeSettings> = themePreferences.settings
+		.stateIn(viewModelScope, SharingStarted.Eagerly, ThemeSettings())
 
 	val accountPurity: StateFlow<Set<String>> = accountPreferences.accountPurity
 		.stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
@@ -46,6 +56,11 @@ class SettingsViewModel @Inject constructor(
 
 	val lastRequest: StateFlow<String?> = diagnostics.lastRequest
 	val lastResponse: StateFlow<String?> = diagnostics.lastResponse
+
+	val installedVersion: String = updateRepository.installedVersion
+
+	private val _update = MutableStateFlow<UpdateUiState>(UpdateUiState.Idle)
+	val update: StateFlow<UpdateUiState> = _update.asStateFlow()
 
 	private val _apiKeyInvalid = MutableStateFlow(false)
 	val apiKeyInvalid: StateFlow<Boolean> = _apiKeyInvalid.asStateFlow()
@@ -111,8 +126,51 @@ class SettingsViewModel @Inject constructor(
 
 	fun setSorting(sorting: Sorting) {
 		viewModelScope.launch {
-			filterPreferences.update { current -> current.copy(sorting = sorting) }
+			homePersonalizationRepository.updatePersisted { current -> current.copy(sorting = sorting) }
 		}
+	}
+
+	fun setAppearanceMode(mode: AppearanceMode) {
+		viewModelScope.launch {
+			themePreferences.setMode(mode)
+		}
+	}
+
+	fun setLightPreset(id: String) {
+		viewModelScope.launch {
+			themePreferences.setLightPreset(id)
+		}
+	}
+
+	fun setDarkPreset(id: String) {
+		viewModelScope.launch {
+			themePreferences.setDarkPreset(id)
+		}
+	}
+
+	fun checkForUpdates() {
+		if (_update.value is UpdateUiState.Checking) {
+			return
+		}
+		_update.value = UpdateUiState.Checking
+		viewModelScope.launch {
+			val today = LocalDate.now().toString()
+			when (val result = updateRepository.check()) {
+				is UpdateCheckResult.UpdateAvailable -> {
+					_update.value = UpdateUiState.Available(result.version, result.downloadUrl)
+					updateRepository.markChecked(today)
+				}
+				UpdateCheckResult.UpToDate -> {
+					_update.value = UpdateUiState.NoUpdate
+					updateRepository.markChecked(today)
+				}
+				UpdateCheckResult.Error -> _update.value = UpdateUiState.CheckError
+			}
+		}
+	}
+
+	fun consumeUpdate() {
+		_update.value = UpdateUiState.Idle
 	}
 
 	fun consumeMessage() {
@@ -132,4 +190,16 @@ enum class SettingsMessage(@StringRes val textRes: Int) {
 	INVALID(R.string.settings_api_key_invalid),
 	SAVE_ERROR(R.string.settings_api_key_save_error),
 	REMOVED(R.string.settings_api_key_removed)
+}
+
+sealed interface UpdateUiState {
+	data object Idle : UpdateUiState
+
+	data object Checking : UpdateUiState
+
+	data object NoUpdate : UpdateUiState
+
+	data class Available(val version: String, val downloadUrl: String) : UpdateUiState
+
+	data object CheckError : UpdateUiState
 }

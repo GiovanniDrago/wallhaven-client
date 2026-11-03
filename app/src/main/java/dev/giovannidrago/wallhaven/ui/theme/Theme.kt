@@ -1,49 +1,49 @@
 package dev.giovannidrago.wallhaven.ui.theme
 
-import android.os.Build
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import dev.giovannidrago.wallhaven.domain.DEFAULT_DARK_PRESET_ID
+import dev.giovannidrago.wallhaven.domain.DEFAULT_LIGHT_PRESET_ID
 
-private val LightColors = lightColorScheme(
-	primary = Color(0xFF4C5BD4),
-	secondary = Color(0xFF5A5F7D),
-	tertiary = Color(0xFF7B4E8C)
-)
+private val DefaultLightColors: ColorScheme = lightPreset(DEFAULT_LIGHT_PRESET_ID).colorScheme
 
-private val DarkColors = darkColorScheme(
-	primary = Color(0xFFB9C3FF),
-	secondary = Color(0xFFC3C6DD),
-	tertiary = Color(0xFFEAB8FF)
-)
+private val DefaultDarkColors: ColorScheme = darkPreset(DEFAULT_DARK_PRESET_ID).colorScheme
 
 @Composable
 fun WallhavenTheme(
+	colorScheme: ColorScheme? = null,
 	darkTheme: Boolean = isSystemInDarkTheme(),
-	dynamicColor: Boolean = true,
 	content: @Composable () -> Unit
 ) {
-	val colorScheme = when {
-		dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-			val context = LocalContext.current
-			if (darkTheme) {
-				dynamicDarkColorScheme(context)
-			} else {
-				dynamicLightColorScheme(context)
+	val effective = colorScheme ?: if (darkTheme) DefaultDarkColors else DefaultLightColors
+
+	val view = LocalView.current
+	if (!view.isInEditMode) {
+		SideEffect {
+			val activity = view.context.findActivity() ?: return@SideEffect
+			WindowCompat.getInsetsController(activity.window, view).apply {
+				isAppearanceLightStatusBars = !darkTheme
+				isAppearanceLightNavigationBars = !darkTheme
 			}
 		}
-		darkTheme -> DarkColors
-		else -> LightColors
 	}
 
 	MaterialTheme(
-		colorScheme = colorScheme,
+		colorScheme = effective,
 		content = content
 	)
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+	is Activity -> this
+	is ContextWrapper -> baseContext.findActivity()
+	else -> null
 }

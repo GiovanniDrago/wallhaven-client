@@ -7,7 +7,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.giovannidrago.wallhaven.data.db.WallpaperEntity
-import dev.giovannidrago.wallhaven.data.prefs.FilterPreferences
+import dev.giovannidrago.wallhaven.data.repository.HomePersonalizationRepository
 import dev.giovannidrago.wallhaven.data.repository.WallpaperRepository
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,9 +19,9 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
 	private val repository: WallpaperRepository,
-	filterPreferences: FilterPreferences
+	homePersonalizationRepository: HomePersonalizationRepository
 ) : ViewModel() {
-	val gallery: Flow<PagingData<WallpaperEntity>> = filterPreferences.filters
+	val gallery: Flow<PagingData<WallpaperEntity>> = homePersonalizationRepository.effective
 		.flatMapLatest { filters -> repository.gallery(filters) }
 		.cachedIn(viewModelScope)
 

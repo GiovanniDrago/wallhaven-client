@@ -7,6 +7,7 @@ enum class AppSection {
 	SEARCH,
 	FAVORITES,
 	ALBUMS,
+	HOME_PERSONALIZATION,
 	SETTINGS
 }
 
@@ -24,6 +25,9 @@ data object AlbumRoute
 
 @Serializable
 data class AlbumDetailRoute(val albumId: String)
+
+@Serializable
+data object HomePersonalizationRoute
 
 @Serializable
 data object SettingsRoute
