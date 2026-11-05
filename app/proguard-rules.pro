@@ -2,13 +2,13 @@
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.**
 
--keepclassmembers class dev.giovannidrago.wallhaven.** {
+-keepclassmembers class com.takasu.wallhaven.** {
 	*** Companion;
 }
--keepclasseswithmembers class dev.giovannidrago.wallhaven.** {
+-keepclasseswithmembers class com.takasu.wallhaven.** {
 	kotlinx.serialization.KSerializer serializer(...);
 }
--keep,includedescriptorclasses class dev.giovannidrago.wallhaven.**$$serializer {
+-keep,includedescriptorclasses class com.takasu.wallhaven.**$$serializer {
 	*;
 }
 

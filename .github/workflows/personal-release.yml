@@ -14,7 +14,7 @@ jobs:
       - name: 'Set up JDK'
         uses: 'actions/setup-java@v4'
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
           cache: 'gradle'
 
@@ -62,7 +62,7 @@ jobs:
           body: |
             Personal build of Wallhaven Client, signed with the personal release key.
 
-            Application id: `dev.giovannidrago.wallhaven`.
+            Application id: `com.takasu.wallhaven`.
 
             Install from the phone's file manager. The SHA-256 checksum is attached next to the APK.
           files: |

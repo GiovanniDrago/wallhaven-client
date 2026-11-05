@@ -25,15 +25,15 @@ val donationUrl: String = (project.findProperty("DONATION_URL") as String?)
 	?: "https://buymeacoffee.com/_takasu_"
 
 android {
-	namespace = "dev.giovannidrago.wallhaven"
+	namespace = "com.takasu.wallhaven"
 	compileSdk = 37
 
 	defaultConfig {
-		applicationId = "dev.giovannidrago.wallhaven"
+		applicationId = "com.takasu.wallhaven"
 		minSdk = 26
 		targetSdk = 37
-		versionCode = 20
-		versionName = "0.5.0"
+		versionCode = 22
+		versionName = "0.6.0"
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 		buildConfigField("String", "DONATION_URL", "\"$donationUrl\"")
 	}

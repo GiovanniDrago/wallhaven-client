@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "appId": "dev.giovannidrago.wallhaven",
+  "appId": "com.takasu.wallhaven",
   "branch": "fdroid/0.5.0",
   "release": {
     "versionName": "0.5.0",
@@ -9,7 +9,7 @@
     "tag": "personal-WallhavenClient-0.5.0-6",
     "commit": "0123456789abcdef0123456789abcdef01234567",
     "workflowFile": "personal-release.yml",
-    "buildPath": "/home/vagrant/build/dev.giovannidrago.wallhaven",
+    "buildPath": "/home/vagrant/build/com.takasu.wallhaven",
     "agpVersion": "9.4.1",
     "gradleVersion": "9.7.1",
     "jdkVersion": "17",

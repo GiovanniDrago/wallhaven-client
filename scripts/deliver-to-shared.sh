@@ -4,7 +4,7 @@ set -euo pipefail
 
 REPO="${REPO:-GiovanniDrago/wallhaven-client}"
 DEST="${DEST:-/mnt/shared/debian/wallhaven-client}"
-APP_ID="dev.giovannidrago.wallhaven"
+APP_ID="com.takasu.wallhaven"
 
 mkdir -p "$DEST"
 

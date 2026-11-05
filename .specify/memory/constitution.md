@@ -83,7 +83,7 @@ Android SDK exists on the development VM.
   trailing whitespace.
 - Existing public APIs and behavior MUST remain compatible unless a spec explicitly changes
   them.
-- `applicationId` is `dev.giovannidrago.wallhaven`; this is a personal, non-Play-Store APK.
+- `applicationId` is `com.takasu.wallhaven`; this is a personal, non-Play-Store APK.
 
 ## Development Workflow, Licensing & Release
 

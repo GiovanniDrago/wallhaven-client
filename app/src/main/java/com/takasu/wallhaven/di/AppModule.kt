@@ -1,0 +1,61 @@
+package com.takasu.wallhaven.di
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.room.Room
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import com.takasu.wallhaven.data.db.AlbumDao
+import com.takasu.wallhaven.data.db.DB_MIGRATION_1_2
+import com.takasu.wallhaven.data.db.WallhavenDao
+import com.takasu.wallhaven.data.db.WallhavenDatabase
+import com.takasu.wallhaven.data.prefs.ApiKeyStore
+import com.takasu.wallhaven.data.prefs.SecureApiKeyStore
+import com.takasu.wallhaven.util.AppLogger
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+
+private val Context.wallhavenDataStore by preferencesDataStore(name = "wallhaven_filter_prefs")
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+	@Provides
+	@Singleton
+	fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> = context.wallhavenDataStore
+
+	@Provides
+	@Singleton
+	fun provideDatabase(@ApplicationContext context: Context): WallhavenDatabase = Room.databaseBuilder(
+		context,
+		WallhavenDatabase::class.java,
+		"wallhaven.db"
+	)
+		// Upgrades preserve favorites and browsed wallpapers; the browsable cache is never dropped.
+		.addMigrations(DB_MIGRATION_1_2)
+		.build()
+
+	@Provides
+	@Singleton
+	fun provideDao(database: WallhavenDatabase): WallhavenDao = database.dao()
+
+	@Provides
+	@Singleton
+	fun provideAlbumDao(database: WallhavenDatabase): AlbumDao = database.albumDao()
+
+	@Provides
+	@Singleton
+	fun provideApiKeyStore(@ApplicationContext context: Context, logger: AppLogger): ApiKeyStore = SecureApiKeyStore(context, logger)
+
+	@Provides
+	@Singleton
+	@ApplicationScope
+	fun provideApplicationScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+}

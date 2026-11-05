@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "mode": "new",
   "app": {
-    "packageId": "dev.giovannidrago.wallhaven",
+    "packageId": "com.takasu.wallhaven",
     "name": "Wallhaven Client",
     "license": "GPL-3.0-only",
     "authorName": "Giovanni Drago",
@@ -15,7 +15,7 @@
     "repoUrl": "https://github.com/GiovanniDrago/wallhaven-client",
     "branch": "main",
     "defaultBranch": "main",
-    "workDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/upstream",
+    "workDir": "/home/takasu/fdroid-work/com.takasu.wallhaven/upstream",
     "tagPattern": "personal-WallhavenClient-.*",
     "workflowFile": "personal-release.yml",
     "module": "app",
@@ -60,12 +60,12 @@
   "mr": {
     "language": "en",
     "title": "New app: Wallhaven Client",
-    "bodyFile": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/handoff/mr.md"
+    "bodyFile": "/home/takasu/fdroid-work/com.takasu.wallhaven/handoff/mr.md"
   },
   "paths": {
-    "workRoot": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven",
-    "upstreamDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/upstream",
-    "fdroiddataDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/fdroiddata",
-    "handoffDir": "/home/takasu/fdroid-work/dev.giovannidrago.wallhaven/handoff"
+    "workRoot": "/home/takasu/fdroid-work/com.takasu.wallhaven",
+    "upstreamDir": "/home/takasu/fdroid-work/com.takasu.wallhaven/upstream",
+    "fdroiddataDir": "/home/takasu/fdroid-work/com.takasu.wallhaven/fdroiddata",
+    "handoffDir": "/home/takasu/fdroid-work/com.takasu.wallhaven/handoff"
   }
 }
